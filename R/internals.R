@@ -1,0 +1,58 @@
+# check file extensions and if it is a relative path
+check_file <- function(f, ext, check_rel = FALSE) {
+  stopifnot(is.character(f) && length(f) == 1)
+
+  fileext <- dplyr::last(unlist(strsplit(f, ".", fixed = T)))
+  if (length(fileext) == 0 || fileext != ext)
+    stop("File extension must be '.", ext, "'!", call. = F)
+
+  if (check_rel && fs::is_absolute_path(dirname(f)))
+    stop("Path to file must be relative (to wdir set in t2d())!", call. = F)
+}
+
+# re-arrange data.frame according to order of mesh coordinates and variables
+arrange_meshdata <- function(x, y, vars, values) {
+  data.frame(x = x, y = y) %>%
+    dplyr::left_join(values, by = c("x", "y")) %>% # ensure correct order of x and y
+    dplyr::mutate(variable = factor(stringr::str_to_upper(.data$variable), levels = vars)) %>% # order of variable
+    dplyr::arrange(.data$timestep, .data$variable) # correct order of timestep and variable
+}
+
+# get all unique edges of triangles from an ikle (no. of triangles x 3) matrix.
+# Output is a (no. of edges x 2) matrix (columns are edge nodes)
+get_tri_edg <- function(ikle) unique(t(apply(get_edges(ikle), 1, sort)))
+
+
+# SpatialLines to data.frame with columns x, y, and line (derived from cump)
+sl2df <- function(x) {
+  as.data.frame(raster::geom(x)) %>%
+    dplyr::rename(line = .data$cump) %>%
+    dplyr::select(.data$x, .data$y, .data$line)
+}
+
+
+# sf (MULTI)LINESTRING geometry to data.frame with columns x, y, and line
+sf2df <- function(x) {
+  if (inherits(sf::st_geometry(x), "sfc_MULTILINESTRING")) {
+    out <- data.frame(sf::st_coordinates(x)) %>%
+      tidyr::unite(.data$L1, .data$L2, col = "line", sep = "") %>%
+      dplyr::rename(x = .data$X, y = .data$Y)
+  } else if (inherits(sf::st_geometry(x), "sfc_LINESTRING")) {
+    out <- data.frame(sf::st_coordinates(x)) %>%
+      dplyr::rename(x = .data$X, y = .data$Y, line = .data$L1)
+  } else stop("Object's geometry must be of type LINESTRING or MULTILINESTRING!", call. = F)
+
+  out
+}
+
+
+# function checks if a character string contains spaces and if so makes sure they are quoted
+check_space <- function(x) {
+  if (grepl(" ", x)) {
+    if (!grepl("^'", x))
+      x <- paste0("'", x)
+    if (!grepl("'$", x))
+      x <- paste0(x, "'")
+  }
+  x
+}

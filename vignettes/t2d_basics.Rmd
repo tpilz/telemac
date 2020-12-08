@@ -1,0 +1,201 @@
+---
+title: "R interface for TELEMAC-2D"
+author: "Tobias Pilz"
+date: "December 2020"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{R interface for TELEMAC-2D}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+Sys.setlocale("LC_ALL","en_GB")
+```
+
+This document briefly demonstrates the basic functionalities of the `telemac` package. The package is an R interface for the modelling suite OpenTELEMAC. The focus of this vignette is the TELEMAC-2D module for 2-dimensional hydrodynamic modelling. The example demonstrates rainfall-induced inundation modelling for an urban area in the northwest of the megacity of Lagos, Nigeria, including mesh generation based on a freely available DEM.
+
+# Prerequisites
+Aside from `R` and the `telemac` package (and its package dependencies) the OpenTELEMAC software is needed. The model suite can be obtained and downloaded for free after registration from <http://www.opentelemac.org>. Install it and make sure it is running on your system.
+
+In addition we need some more R packages to run this demonstration, which include [tidyverse](https://www.tidyverse.org), [raster](https://cran.r-project.org/web/packages/raster/index.html), and [sf](https://r-spatial.github.io/sf/index.html). The packages can be installed directly from CRAN.
+
+```{r libraries}
+library(raster)
+library(sf)
+library(tidyverse)
+library(telemac)
+```
+
+
+# Input data
+
+For a basic TELEMAC-2D setup three input files are required: a geometry file (`*.slf`) with mesh information, boundary conditions (`*.cli`), and steering parameters (`*.cas`). In the following the basic setup of each input is explained in more detail.
+
+## The geometry (mesh) file (*.slf)
+
+The geometry of a TELEMAC setup is stored in a binary file of type SELAFIN (also referred to as SERAFIN). The mesh is typically stored as a triangulated irregular network (TIN). There are several possible approaches to obtain such a mesh, which shall not be discussed here in greater detail. In this demonstration we will start with a typical DEM represented by a regular grid and convert it into a TIN by constrained Delaunay triangulation using the well-known [Triangle algorithm](http://www.cs.cmu.edu/~quake/triangle.html).
+
+First we read an example DEM. This shows an urban area in the northwestern region of the city of Lagos, Nigeria, and is derived from the (after registration) freely avilable [MERIT Hydro DEM](http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro/). Despite its coarse resolution of about 90 x 90 m the DEM is hydrologically conditioned and is known for a relatively good performance in hydrodynamic modelling in comparison to other freely available DEM products.
+
+```{r read_dem, message = FALSE, fig.width = 6, fig.height = 6}
+dem_rast <- raster(system.file("dem/dem_merit_lagos.tif", package = "telemac"))
+NAvalue(dem_rast) <- -999 # I defined -999 to be NA when creating the dem file
+plot(dem_rast, col = colorRampPalette(c("blue", "green", "red"))(255))
+```
+
+In addition we need the catchment boundary. Vector data in R are best handled using package `sp` or the successor `sf` (`telemac` can handle both).
+
+```{r read_bnd}
+bnd <- st_read(system.file("dem/boundary_lagos.gpkg", package = "telemac"))
+```
+
+The `telemac` package provides the function `tin()` to initialise a TIN the model mesh will be based on. Internally it uses the R package [RTriangle](https://cran.r-project.org/web/packages/RTriangle/index.html) to perform triangulation with the Triangle algorithm. In the example the catchment boundary is taken and triangulation performed starting with a resolution of 90 m (`s = 90`) of TIN points along the catchment boundary. Furthermore, the resulting triangles shall not be larger than 10,000 m^2 (`a = 100^2`) and the angles within the triangles not smaller than 30 degrees (`q = 30`).
+
+There is also the possibility to include breaklines to further refine the triangulation (see `?tin`). Holes are, however, not yet supported. Besides, there are no checks implemented to assure the success of triangulation and validity of the resulting TIN for model application (e.g. all breaklines must be within the boundary, breaklines should not intersect, etc.). A good summary about successful mesh generation for TELEMAC is presented in the documentation of the [pputils](https://github.com/pprodano/pputils) python tools.
+
+```{r triangulate}
+tin_obj <- tin(list(boundary = bnd), s = 90, a = 100^2, q = 30)
+```
+
+The function creates an object of class `t2d_tin` that contains all TIN points and their relations to define the triangles.
+
+```{r tin_obj}
+str(tin_obj)
+```
+
+There are also a print and a plot method for `t2d_tin` objects.
+
+```{r tin_obj_plot, fig.width = 6, fig.height = 6}
+tin_obj
+plot(tin_obj, pch = ".")
+```
+
+What is still missing to obtain a complete mesh for application within TELEMAC is elevation for each TIN point. This can be inferred by interpolation from the DEM.
+
+For this step the `telemac` package provides function `geo()`. The function accepts several input types, e.g. the name of an existing SELAFIN file from which the geometry is read. However, in this demonstration we want to generate a new geometry file based on our triangulated DEM. The interpolation will be conducted using an approach of inverse distance weighting (IDW) of nearest neighbours as implemented in function `idw()` of package [gstat](https://cran.r-project.org/web/packages/gstat/index.html).
+
+In the example, IDW is conducted using the five (`n = 5`) nearest neighbours around each TIN point and a weighting power of 2 (`idp = 2`) of inverse distances.
+
+```{r geo_obj}
+geo_obj <- geo(tin_obj, dem = dem_rast, title = "title", fname = "geometry.slf",
+               n = 5, idp = 2)
+```
+
+The resulting `t2d_geo` object is a `list` and individual elements may be accessed (or modified) with `list` functionalities.
+
+```{r geo_object_mod}
+str(geo_obj)
+geo_obj$header$title
+geo_obj$header$title <- "Merit, RTriangle, 90m"
+geo_obj
+```
+
+There is also a plot method implemented. This creates a 2d surface plot of the mesh by linearly interpolating the three values of a triangle to grid points of given resolution (`s = 30` meter) within the triangle. The higher the resolution (the smaller argument `s`), the smoother the plot will appear.
+
+```{r geo_obj_plot, fig.width = 6, fig.height = 6}
+plot(geo_obj, s = 30, col = colorRampPalette(c("blue", "green", "red"))(255))
+```
+
+
+## The boundary conditions file (*.cli)
+
+The boundary conditions are stored as a simple text file that can be investigated and modified with any text editor. Each line in the file represents a point along the mesh boundary. Function `cli()` generates an object of class `t2d_cli` that is associated with a boundary conditions file. The function either imports an existing file or creates a new configuration when providing a `data.frame` or a `t2d_geo` object from which a template configuration will be inferred. The template configuration represents a closed boundary with zero prescribed depths or velocities.
+
+```{r cli_object}
+cli_obj <- cli(geo_obj, fname = "boundary.cli")
+cli_obj
+```
+
+Internally a `t2d_cli` object is a `data.frame` and individual element may be accessed (or modified) with `data.frame` (in this example `tidyverse`) functionalities.
+
+```{r cli_object_mod}
+str(cli_obj)
+cli_obj <- cli_obj %>%
+  # open boundary with free depth and velocities
+  mutate(lihbor = 4, liubor = 4, livbor = 4)
+```
+
+
+## The steering file (*.cas)
+
+The steering file is a simple text file that contains a number of key--value pairs (delimited by characters `:` or `=`), the steering parameters for a TELEMAC simulation. The `telemac` package comes with function `cas()` to initialise a `t2d_cas` object with steering parameters associated with a steering file. The function provides differen options, e.g. providing the name of an existing file or creating a template configuration if no argument is given. The template configuration contains a number of arbitrary parameters, in this case defining a strong rainfall event of 66 mm over 4 hours, dry initial conditions, a total simulation period of one day with adaptive temporal resolution using a finite-volume scheme, and output printout every 3600 timesteps. Note that there is a huge number of possible steering parameters that are not included in the template file (for these the respective default settings are used by TELEMAC).
+
+```{r cas_obj}
+cas_obj <- cas(fname = "steering.cas")
+cas_obj
+```
+
+Internally a `t2d_cas` object is a `list` and individual element may be accessed (or modified) with `list` functionalities.
+
+```{r cas_object_mod}
+str(cas_obj)
+cas_obj[["VARIABLES FOR GRAPHIC PRINTOUTS"]] <- "H,M"
+```
+
+
+# TELEMAC-2D project setup
+
+Finally we can complete our TELEMAC-2D setup. To do so we create a `t2d` object using function `t2d()`. Adjust argument `wdir` (path to working, i.e. TELEMAC-2D project directory) according to your needs.
+
+```{r t2d_obj}
+t2d_obj <- t2d(title = "Test setup", wdir = "t2d_test", exec = "telemac2d.py",
+               cas = cas_obj, geo = geo_obj, cli = cli_obj)
+t2d_obj
+```
+
+Note that we have not yet written any files. As a last step to prepare a TELEMAC-2D run we need to write the model's input files. All prepared input data will be written into their associated files relative to `wdir` given in `t2d_obj`.
+
+```{r pre_project}
+write_t2d(t2d_obj)
+```
+
+
+# Model simulation
+
+The model can be run either directly or via R interface `simulate_t2d()`. However, TELEMAC-2D runs, depending on domain size, spatial and temporal resolution, and numerical settings, can take quite a while. Using the R interface to conduct simulations makes only sense if you are sure the model run will not take too long.
+
+The `simulate_t2d()` function accepts a selection of output variables to be imported into R via argument `vars`. Depending on the number of mesh points, output intervals, and variables specified in the steering file the required storage capacity in R can be high. Therefore it makes sense to only import variables for immediate analyses.
+
+```{r simulation, eval = FALSE}
+t2d_obj <- simulate_t2d(t2d_obj, log = "test_run.log", res = "test_results.slf",
+                        vars = "water depth")
+```
+
+Note that the results of a previous simulation run can be imported as well.
+
+```{r import_results}
+t2d_obj$res <- results(system.file("telemac/results.slf", package = "telemac"),
+                       log = system.file("telemac/test_run.log", package = "telemac"),
+                       vars = "water depth")
+```
+
+The simulation results are represented as a `t2d_res` object with header information, the underlying mesh as `t2d_tin` object, a log of TELEMAC's runtime messages, and the actual data as a tidy `data.frame`. For a first investigation it is always good to have a look at the log file. The runtme log is stored in the `t2d_res` object and is accessible via `t2d_obj$res$log` (not shown here). Otherwise there is a print method to show some general information.
+
+```{r results}
+t2d_obj$res
+str(t2d_obj$res)
+```
+
+There is also a function `write_results()` to write data into a SELAFIN file. This can be used, for instance, to reduce the amount of data or write restrospectively corrected data. Note that in this example we have only one out of originally two variables imported that will now be written into a SELAFIN file.
+
+```{r results_export, eval = FALSE}
+# change associated file (otherwise the original file would be overwritten) 
+t2d_obj$res <- results(t2d_obj$res, fname = "t2d_test/results_updated.slf")
+t2d_obj$res <- write_results(t2d_obj)
+t2d_obj$res
+```
+
+For visual inspection a plot method is available. In the following variable `v = "water_depth"` at timestep `t = 4*3600` is shown. As for the mesh explained above, the values are interpolated to a grid with `s = 30` meter resolution to generate a 2d surface plot.
+
+```{r results_plot, fig.width = 6, fig.height = 6}
+plot(t2d_obj$res, s = 30, v = "water depth", t = 4*3600,
+     col = c('#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'))
+```

@@ -1,0 +1,49 @@
+/----------------------------------------------------------------------
+/                      FILE DEFINITION
+/----------------------------------------------------------------------
+
+BOUNDARY CONDITIONS FILE                     = boundary.cli
+GEOMETRY FILE                                = geometry.slf
+RESULTS FILE                                 = results.slf
+
+/----------------------------------------------------------------------
+/                        GENERAL OPTIONS
+/----------------------------------------------------------------------
+
+TITLE : 'template'
+VARIABLES FOR GRAPHIC PRINTOUTS             : 'U,V,S,B,H,M'
+DURATION                                    : 86400
+GRAPHIC PRINTOUT PERIOD                     : 3600
+LISTING PRINTOUT PERIOD                     : 3600
+MASS-BALANCE                                : YES
+COMPUTATION CONTINUED                       : NO
+
+/----------------------------------------------------------------------
+/                      INITIAL CONDITIONS
+/----------------------------------------------------------------------
+
+INITIAL CONDITIONS                          :'ZERO DEPTH'
+
+/----------------------------------------------------------------------
+/                       NUMERICAL OPTIONS
+/----------------------------------------------------------------------
+
+EQUATIONS                                    : 'SAINT-VENANT FV'
+FINITE VOLUME SCHEME                         : 5
+VARIABLE TIME-STEP                           : YES
+DESIRED COURANT NUMBER                       : 0.9
+
+/--------------------------------------------------------/
+/   FRICTION PARAMETERS                                  /
+/--------------------------------------------------------/
+
+LAW OF BOTTOM FRICTION        : 3
+FRICTION COEFFICIENT          : 50
+
+/--------------------------------------------------------/
+/   RAINFALL                                             /
+/--------------------------------------------------------/
+
+RAIN OR EVAPORATION                      = YES
+RAIN OR EVAPORATION IN MM PER DAY        = 400.0
+DURATION OF RAIN OR EVAPORATION IN HOURS = 4.

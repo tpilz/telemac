@@ -1,0 +1,248 @@
+
+
+Loading Options and Configurations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  _                        _    
+ | |                      | |   
+ | |_  _ __  _   _  _ __  | | __
+ | __|| '__|| | | || '_ \ | |/ /
+ | |_ | |   | |_| || | | ||   < 
+  \__||_|    \__,_||_| |_||_|\_\
+                                
+                                
+
+
+Running your CAS file(s) for:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+susgfopenmpi: 
+    
+
+    +> parallel mode, using mpiexec directly (of the openMPI package).
+    |  The only difference with the scalar versions (optimised) is the presence
+    |  of the key mpi_cmdexec and the -DHAVE_MPI compilation directive.
+    |  Finally, note that this configuration also works whether
+    |  processor is 0 or 1.
+
+    +> root:    /home/tobias/apps/telemac/v8p1r0
+    +> module: ad / api / artemis / bief
+               damocles  / gaia  / gretel  / hermes
+               identify_liq_bnd  / khione  / mascaret  / nestor
+               parallel  / partel  / postel3d  / sisyphe
+               special  / stbtel  / telemac2d  / telemac3d
+               tomawac / waqtel
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+... processing the steering file
+
+... checking parallelisation
+
+... handling temporary directories
+         copying: steering.cas -> /home/tobias/R/MyPackages/telemac/t2d_test/steering.cas_2020-12-08-18h14min17s/T2DCAS
+         copying: telemac2d.dico -> /home/tobias/R/MyPackages/telemac/t2d_test/steering.cas_2020-12-08-18h14min17s/T2DDICO
+         copying: boundary.cli -> /home/tobias/R/MyPackages/telemac/t2d_test/steering.cas_2020-12-08-18h14min17s/T2DCLI
+         copying: geometry.slf -> /home/tobias/R/MyPackages/telemac/t2d_test/steering.cas_2020-12-08-18h14min17s/T2DGEO
+
+... checking the executable
+
+
+Running your simulation(s) :
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+In /home/tobias/R/MyPackages/telemac/t2d_test/steering.cas_2020-12-08-18h14min17s:
+mpiexec -wdir /home/tobias/R/MyPackages/telemac/t2d_test/steering.cas_2020-12-08-18h14min17s -n 1 --default-hostfile none /home/tobias/R/MyPackages/telemac/t2d_test/steering.cas_2020-12-08-18h14min17s/out_telemac2d
+
+
+ MASTER PROCESSOR NUMBER            0  OF THE GROUP OF            1
+ EXECUTABLE FILE: /home/tobias/R/MyPackages/telemac/t2d_test/steering.cas_2020-12-08-18h14min17s/A.EXE
+ LISTING OF TELEMAC2D------------------------------------------------------------------------------
+
+                TTTTT  EEEEE  L      EEEEE  M   M  AAAAA  CCCCC
+                  T    E      L      E      MM MM  A   A  C
+                  T    EEE    L      EEE    M M M  AAAAA  C
+                  T    E      L      E      M   M  A   A  C
+                  T    EEEEE  LLLLL  EEEEE  M   M  A   A  CCCCC
+
+                        2D    VERSION V8P1   FORTRAN 2003
+
+                        ~^~^~^~^~^~^~^~^~^~^~^^~^~^~^~^~^~
+                          ~                            ~
+                               \   '    o      '
+                               /\ o       \  o
+                             >=)'>    '   /\ '
+                               \/   \   >=)'>        ~
+                               /    /\    \/
+                        ~         >=)'>   /     .
+                                    \/                   )
+                                    /                   (
+                                          ~          )   )
+                          }     ~              (    (   (
+                         {                      )    )   )
+                          }  }         .       (    (   (
+                         {  {               /^^^^^^^^^^^^
+                        ^^^^^^^^^\         /
+                                  ^^^^^^^^^
+
+ DIFFERENT NUMBER OF PARALLEL PROCESSORS:
+ DECLARED BEFORE (CASE OF COUPLING ?):           1
+ TELEMAC-2D :           0
+ VALUE            1  IS KEPT
+
+                   ********************************************
+                   *               LECDON:                    *
+                   *        AFTER CALLING DAMOCLES            *
+                   *        CHECKING OF DATA  READ            *
+                   *         IN THE STEERING FILE             *
+                   ********************************************
+
+ NO SPECIFIC TREATMENT OF DRY ZONES
+  IN FINITE VOLUMES
+
+ EXITING LECDON. NAME OF THE STUDY:
+ Test setup
+
+ OPENING FILES FOR TELEMAC2D
+
+                          *****************************
+                          *    MEMORY ORGANIZATION    *
+                          *****************************
+
+ READ_MESH_INFO: TITLE= Merit, RTriangle, 90m
+            NUMBER OF ELEMENTS:     7991
+            NUMBER OF POINTS:     4257
+
+            FORMAT NOT INDICATED IN TITLE
+
+ MXPTEL (BIEF) : MAXIMUM NUMBER OF ELEMENTS AROUND A POINT:   9
+                 MAXIMUM NUMBER OF POINTS AROUND A POINT:   9
+ USER_CORRXY (BIEF):NO MODIFICATION OF COORDINATES
+
+ MESH: MESH   ALLOCATED
+
+                     *************************************
+                     *    END OF MEMORY ORGANIZATION:    *
+                     *************************************
+
+ INITIALIZING TELEMAC2D FOR
+ INBIEF (BIEF): NOT A VECTOR MACHINE (ACCORDING TO YOUR DATA)
+ STRCHE (BIEF): NO MODIFICATION OF FRICTION
+
+ THERE IS     1 LIQUID BOUNDARIES:
+
+ BOUNDARY    1 :
+  BEGINS AT BOUNDARY POINT:        1 , WITH GLOBAL NUMBER:        21
+  AND COORDINATES:     530540.6           730219.2
+  ENDS AT BOUNDARY POINT:        1 , WITH GLOBAL NUMBER:        21
+  AND COORDINATES:     530540.6           730219.2
+
+ CORFON (TELEMAC2D): NO MODIFICATION OF BOTTOM
+
+================================================================================
+ ITERATION        0    TIME:   0.0000 S
+ TELEMAC2D INITIALIZED
+
+                  ********************************
+                  *                              *
+                  *        HLLC SCHEME           *
+                  *     FIRST ORDRE IN SPACE     *
+                  *                              *
+                  ********************************
+
+================================================================================
+ ITERATION     3600    TIME:  6 H  4 MIN  57.1282 S   (    21897.1282 S)
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ TIME-STEP:    5.0392005566458300
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    2000121.     M3
+     FLUX BOUNDARY    1:    -64.15999     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2190E+05 S :    0.1792790E-14
+
+================================================================================
+ ITERATION     7200    TIME: 11 H 12 MIN  29.3817 S   (    40349.3817 S)
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ TIME-STEP:    5.1688664868217575
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    1442579.     M3
+     FLUX BOUNDARY    1:    -12.30318     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.4035E+05 S :   -0.1740889E-14
+
+================================================================================
+ ITERATION    10800    TIME: 16 H 22 MIN  59.5194 S   (    58979.5194 S)
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ TIME-STEP:    5.1864892619191370
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    1318236.     M3
+     FLUX BOUNDARY    1:    -3.343913     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.5898E+05 S :    0.1859958E-14
+
+================================================================================
+ ITERATION    14400    TIME: 21 H 34 MIN  10.7110 S   (    77650.7110 S)
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ TIME-STEP:    5.1918600000282549
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    1278529.     M3
+     FLUX BOUNDARY    1:    -1.338197     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.7766E+05 S :   -0.8899199E-15
+
+================================================================================
+ ITERATION    16086    TIME:    1 D  0 H  0 MN   0.0000 S   (    86400.0000 S)
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    1268615.     M3
+     FLUX BOUNDARY    1:   -0.9407407     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.8640E+05 S :    0.4544412E-14
+--------------------------------------------------------------------------------
+                   FINAL BALANCE OF WATER VOLUME
+
+     RELATIVE ERROR CUMULATED ON VOLUME:   -0.3635398E-06
+
+     INITIAL VOLUME              :     0.000000     M3
+     FINAL VOLUME                :     1268615.     M3
+     VOLUME THAT ENTERED THE DOMAIN:    -2001360.     M3  ( IF <0 EXIT )
+     VOLUME ADDED BY SOURCE TERM   :     3269974.     M3
+     TOTAL VOLUME LOST             :   -0.7275742     M3
+
+ END OF TIME LOOP
+
+ EXITING MPI
+
+                     *************************************
+                     *    END OF MEMORY ORGANIZATION:    *
+                     *************************************
+
+Note: The following floating-point exceptions are signalling: IEEE_DENORMAL
+STOP 0
+ CORRECT END OF RUN
+
+ ELAPSE TIME :
+                             53  SECONDS
+... merging separated result files
+
+... handling result files
+
+        moving: test_results.slf
+... deleting working dir
+
+
+
+My work is done
+
+
