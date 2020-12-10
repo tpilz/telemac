@@ -112,7 +112,11 @@ tin.matrix <- function(x, ..., ikle, ipobo) {
 #'     \code{x} and \code{y}, the x and y coordinates of vortices along the breaklines,
 #'     and \code{line}, an identifier to identify individual breaklines.}
 #' }
-#' @note Duplicated mesh points are silently removed.
+#' @note
+#' Duplicated mesh points are silently removed.
+#'
+#' Make sure breaklines do not intersect as this is not supported by the Triangle
+#' algorithm.
 #' @name tin
 #' @export
 tin.list <- function(x, ..., s, s_brk, a, q = 30) {
@@ -133,7 +137,7 @@ tin.list <- function(x, ..., s, s_brk, a, q = 30) {
   pts <- rbind(pts, pts[1,]) # close boundary
   if (!missing(s))
     pts <- as.matrix(line_spacing(pts, s = s, output = "df")[,c("x", "y")])
-  pts <- pts[1:(nrow(pts) - 1),] # last point will be slightly off track
+  pts <- pts[1:(nrow(pts) - 1),] # last point duplicated (or slightly off track)
   seg <- cbind(seq(1, nrow(pts)), c(seq(2, nrow(pts)), 1))
 
   # add breaklines
@@ -150,6 +154,14 @@ tin.list <- function(x, ..., s, s_brk, a, q = 30) {
     brks <- as.data.frame(x$breaklines)[,c("x", "y", "line")]
     if (!missing(s_brk))
       brks <- line_spacing(brks, s = s_brk, output = "df")
+
+    # points must be unique
+    brks <- dplyr::anti_join(brks, data.frame(x = pts[,1], y = pts[,2]),
+                             by = c("x", "y"))
+
+    if (any(duplicated(brks[,c("x", "y")])))
+      stop("There are dplicated points in the breaklines, e.g. because breaklines intersect, which is not supported by the Triangle algorithm!", call. = F)
+
     seg_break <- brks %>%
       dplyr::mutate(i = 1:dplyr::n()) %>%
       dplyr::select(.data$line, .data$i) %>%
