@@ -84,4 +84,7 @@ elements are required to perform the triangulation:
 }
 \note{
 Duplicated mesh points are silently removed.
+
+Make sure breaklines do not intersect as this is not supported by the Triangle
+algorithm.
 }

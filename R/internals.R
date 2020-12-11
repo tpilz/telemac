@@ -46,9 +46,9 @@ sf2df <- function(x) {
 }
 
 
-# function checks if a character string contains spaces and if so makes sure they are quoted
-check_space <- function(x) {
-  if (grepl(" ", x)) {
+# function checks if a character string contains special characters and if so makes sure they are quoted
+check_symbols <- function(x) {
+  if (grepl("[/:=& ]", x)) {
     if (!grepl("^'", x))
       x <- paste0("'", x)
     if (!grepl("'$", x))

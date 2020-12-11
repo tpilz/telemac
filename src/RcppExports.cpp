@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// cas_lineadapt
+DataFrame cas_lineadapt(DataFrame df, int sep_len);
+RcppExport SEXP _telemac_cas_lineadapt(SEXP dfSEXP, SEXP sep_lenSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< int >::type sep_len(sep_lenSEXP);
+    rcpp_result_gen = Rcpp::wrap(cas_lineadapt(df, sep_len));
+    return rcpp_result_gen;
+END_RCPP
+}
 // find_ikle
 IntegerMatrix find_ikle(NumericMatrix T, NumericMatrix P);
 RcppExport SEXP _telemac_find_ikle(SEXP TSEXP, SEXP PSEXP) {
@@ -73,6 +85,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_telemac_cas_lineadapt", (DL_FUNC) &_telemac_cas_lineadapt, 2},
     {"_telemac_find_ikle", (DL_FUNC) &_telemac_find_ikle, 2},
     {"_telemac_find_ipobo", (DL_FUNC) &_telemac_find_ipobo, 3},
     {"_telemac_get_edges", (DL_FUNC) &_telemac_get_edges, 1},

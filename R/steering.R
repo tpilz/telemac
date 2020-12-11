@@ -14,6 +14,9 @@ new_cas <- function(dat, fname) {
 validate_cas <- function(x) {
   stopifnot(inherits(x, c("t2d_cas", "list")))
   stopifnot("file" %in% names(attributes(x)))
+  # maximum element length is 144
+  if (any(sapply(x, function(s) nchar(paste(s, collapse = ",")) > 144)))
+    stop("Values of steering parameters must not be longer than 144 characters!", call. = F)
 
   x
 }
@@ -177,9 +180,15 @@ write_cas.data.frame <- function(x, fname, ...) {
   stopifnot(is.character(fname) && length(fname) == 1)
   stopifnot(inherits(x, "data.frame") && all(c("key", "value") %in% colnames(x)))
   check_file(fname, "cas")
+  # arrange parameters nicely readable (separate treatment of continued lines)
   maxlen <- max(sapply(x$key, stringr::str_length))
-  x$key <- sapply(x$key, stringr::str_pad, width = maxlen, side = "right")
-  write.table(x, file = fname, row.names = F, col.names = F, sep = "   :   ", quote = F)
+  x$key <- sapply(x$key, function(s) ifelse(nchar(s) > 0,
+                                            stringr::str_pad(s, width = maxlen, side = "right"),
+                                            ""))
+  dat_out <- paste(x$key, x$value, sep = "   :   ")
+  cont <- grep("^(   :   )", dat_out)
+  dat_out[cont] <- sub("   :   ", "", dat_out[cont])
+  write(dat_out, file = fname, sep = "\n")
 }
 
 #' @name write_cas
@@ -188,10 +197,15 @@ write_cas.list <- function(x, fname, ...) {
   # all elements must be characters of length 1
   dat <- lapply(x, paste, collapse = ",")
 
-  # values with space must be quoted
-  dat <- lapply(dat, check_space)
+  # values with special symbols must be quoted
+  dat <- lapply(dat, check_symbols)
 
+  # data.frame
   df <- data.frame(key = names(dat), value = unname(unlist(dat)), stringsAsFactors = F)
+
+  # elements (key + value) must not be longer than 72 characters, but can be split if so
+  df <- cas_lineadapt(df, 7) # sep is "   :   "
+
   write_cas.data.frame(df, fname = fname)
 }
 
