@@ -9,6 +9,9 @@
 #' @param output \code{character}, either: \code{"list"} to return a \code{list} object;
 #'    \code{"raster"} to return a \code{\link[raster]{raster}} object.
 #' @param ... Arguments passed to or from other methods.
+#' @param v \code{character}, name of the variable that is to be extracted and
+#' interpolated (default is to take the first variable that can be found).
+#' If \code{x} is of class \code{t2d_geo} \code{elevation} will be taken by default.
 #' @return If \code{output == "list"}: A \code{list} with:
 #' \describe{
 #'   \item{x}{X coordinates of the output grid}
@@ -61,14 +64,19 @@ tin2grid.data.frame <- function(x, s, output = c("list", "raster"), ..., col_x =
 
 #' @name tin2grid
 #' @export
-tin2grid.t2d_geo <- function(x, s, output = c("list", "raster"), ...) {
+tin2grid.t2d_geo <- function(x, s, output = c("list", "raster"), ..., v = "elevation") {
   x <- validate_geo(x)
-  df <- data.frame(x = x$tin$points[,1], y = x$tin$points[,2], z = x$elevation)
+  if (v == "elevation")
+    z <- x[[v]]
+  else {
+    if (!(v %in% names(x$privars)))
+      stop("Variable given in 'v' not found in x$privars!", call. = F)
+    z <- x$privars[[v]]$values
+  }
+  df <- data.frame(x = x$tin$points[,1], y = x$tin$points[,2], z = z)
   tin2grid.data.frame(df, tinmat = x$tin$triangles, s = s, output = output)
 }
 
-#' @param v \code{character}, name of the variable that is to be extracted and
-#' interpolated (default is to take the first variable that can be found).
 #' @param t \code{integer}, timestep that is to be extracted and interpolated
 #' (default results in the first timestep).
 #' @name tin2grid
@@ -98,8 +106,6 @@ tin2grid.t2d_res <- function(x, s, output = c("list", "raster"), ..., v = NULL, 
   df <- data.frame(x = dat_sel$x, y = dat_sel$y, z = dat_sel$value)
   tin2grid.data.frame(df, tinmat = x$tin$triangles, s = s, output = output)
 }
-
-# TODO add method for t2d_tin objects
 
 
 #' Adjust line vertex spacing

@@ -6,10 +6,12 @@
 #'
 #' @param x An object of class \code{t2d_geo}.
 #' @param s \code{numeric} value defining the resolution for plotting (the mesh has to be interpolated to a grid for that).
+#' @param v \code{character}, name of the variable that is to be plotted
+#' (only one at a time; default is \code{elevation}).
 #' @param ... Arguments passed to \code{\link[raster]{plot}}.
 #' @export
-plot.t2d_geo <- function(x, s, ...) {
-  x_rast <- tin2grid(x, s = s, output = "raster")
+plot.t2d_geo <- function(x, s, v = "elevation", ...) {
+  x_rast <- tin2grid(x, s = s, output = "raster", v = v)
   raster::plot(x_rast, ...)
 }
 

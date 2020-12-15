@@ -3,7 +3,6 @@
 \name{geo}
 \alias{geo}
 \alias{geo.character}
-\alias{geo.data.frame}
 \alias{geo.list}
 \alias{geo.t2d_geo}
 \alias{geo.t2d_tin}
@@ -13,17 +12,6 @@
 geo(x, fname, ...)
 
 \method{geo}{character}(x, fname = NULL, ...)
-
-\method{geo}{data.frame}(
-  x,
-  fname = NULL,
-  col_x = "x",
-  col_y = "y",
-  col_elev = "z",
-  col_elem = "id",
-  title = "",
-  ...
-)
 
 \method{geo}{list}(x, fname = NULL, ...)
 
@@ -35,32 +23,27 @@ geo(x, fname, ...)
 }
 \arguments{
 \item{x}{Either: A \code{character} string providing the name of an existing geometry file;
-a \code{data.frame} with mesh elements (a triplet of points defines an element);
 a \code{list} with all required elements (see 'Value');
 an object of class \code{t2d_geo};
 an object of class \code{t2d_tin} (requires input \code{dem}).}
 
 \item{fname}{\code{character}, name for the associated geometry file (can also be used to replace an existing entry).}
 
-\item{...}{Arguments passed to or from other methods.}
+\item{...}{Arguments passed to or from other methods: \code{\link{read_geo}}
+if \code{x} is a file name or \code{\link{interpol}} if \code{x} is a \code{t2d_tin} object.}
 
-\item{col_x}{If \code{x} is a \code{data.frame}: column with the x coordinates.}
+\item{data}{\code{list} with all required elements (see \code{Value}) that can
+be given to update an existing object \code{x}.}
 
-\item{col_y}{If \code{x} is a \code{data.frame}: column with the y coordinates.}
-
-\item{col_elev}{If \code{x} is a \code{data.frame}: column with the mesh elevation.}
-
-\item{col_elem}{If \code{x} is a \code{data.frame}: column with identifier for mesh elements (3 point are an element / triangle).}
+\item{dem}{If \code{x} is of type \code{t2d_tin}: a single DEM or a named list
+with element \code{elevation} and further private variables from which the values will
+be interpolated to the TIN mesh points. Each element will be forwarded to
+\code{\link{interpol}}, argument \code{src} (see descriptions therein for supported
+types). Private variables must be a list with elements \code{values} (the object passed
+to \code{interpol}) and \code{unit} (the unit of the variable). You can pass further
+arguments for interpolation, e.g. the numer of neighbours \code{n} etc.}
 
 \item{title}{\code{character}, mesh title (not necessary, max. 72 characters).}
-
-\item{data}{\code{list} that can be given to update an existing object \code{x}.}
-
-\item{dem}{If \code{x} is of type \code{t2d_tin}: a DEM from which the values will
-be interpolated to the TIN mesh points. This input will be forwarded to
-\code{\link{interpol}} (argument \code{src}; see descriptions therein for supported
-types). You can pass further arguments for interpolation, e.g. the numer of
-neighbours \code{n} etc.}
 }
 \value{
 An object of class \code{t2d_geo} consisting of an attribute \code{file}
@@ -71,6 +54,8 @@ pointing to a specific geometry file and a \code{list} with the following elemen
     of points per mesh (3 in case of triangles which is the only supported value for now).}
   \item{tin}{A mesh object of class \code{t2d_tin}, see \link{tin}.}
   \item{elevation}{Values of mesh point elevations.}
+  \item{privars}{A named \code{list} of additional, in TELEMAC termed 'private'
+    variables with elements \code{values} and \code{unit}.}
 }
 }
 \description{
@@ -78,8 +63,49 @@ Initialise a mesh (geometry) object for use within TELEMAC.
 }
 \note{
 Also note the associated \code{\link{plot.t2d_geo}} method.
+}
+\examples{
+library(raster)
+library(sf)
+library(tidyverse)
 
-If \code{x} is a \code{data.frame}, all input arguments referring to columns
-of \code{x} support \code{\link[rlang]{quasiquotation}}, i.e. they can be specified by
-their names, quoted or unquoted, or as column position.
+# get a tin
+bnd <- st_read(system.file("dem/boundary_lagos.gpkg", package = "telemac"))
+tin_obj <- tin(list(boundary = bnd), s = 90, a = 100^2, q = 30)
+
+# load raster
+dem_rast <- raster(system.file("dem/dem_merit_lagos.tif", package = "telemac"))
+
+# create a geo object (interpolates raster to mesh points)
+geo_obj <- geo(tin_obj, dem = dem_rast)
+geo_obj
+str(geo_obj)
+
+# adjust file name
+geo_obj <- geo(geo_obj, fname = "geo.slf")
+geo_obj
+
+# plot: mesh elevations interpolated to grid with resolution s
+plot(geo_obj, s = 30)
+
+# add additional private variable (in this case Curve Numbers)
+dem_priv <- list(
+  # mandatory 'elevation' as raster object
+  elevation = dem_rast,
+  # additional variable 'cn' as data.frame
+  cn = list(values = as.data.frame(dem_rast, xy = TRUE, na.rm = TRUE) \%>\%
+              select(x, y) \%>\%
+              mutate(z = case_when(
+                y > 740000 ~ 95,
+                x > 534000 ~ 90,
+                (x <= 534000) & (y <= 740000) ~ 80
+              )),
+            unit = "-")
+)
+
+geo_priv <- geo(tin_obj, dem = dem_priv)
+
+geo_priv
+str(geo_priv)
+plot(geo_priv, s = 30, v = "cn")
 }

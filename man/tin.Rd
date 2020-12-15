@@ -88,3 +88,17 @@ Duplicated mesh points are silently removed.
 Make sure breaklines do not intersect as this is not supported by the Triangle
 algorithm.
 }
+\examples{
+library(sf)
+
+# load boundary as sf linestring
+bnd <- st_read(system.file("dem/boundary_lagos.gpkg", package = "telemac"))
+
+# create t2d_tin object
+tin_obj <- tin(list(boundary = bnd), s = 90, a = 100^2, q = 30)
+
+# inspection
+tin_obj
+str(tin_obj)
+plot(tin_obj, pch = ".")
+}

@@ -4,15 +4,23 @@
 \alias{read_geo}
 \title{Read geometry file (*.slf)}
 \usage{
-read_geo(fname)
+read_geo(fname, privar = TRUE)
 }
 \arguments{
 \item{fname}{\code{character} File name of the geometry file to be read.}
+
+\item{privar}{\code{logical}, shall variables in addition to bottom elevation
+(in TELEMAC denoted as private variables) be imported as well? Default: \code{TRUE}.}
 }
 \value{
-A \code{list} with header information (see output of \code{\link{read_slf_header}})
-and element \code{elevation}, the mesh point elevations.
+A \code{list} with header information (see output of \code{\link{read_slf_header}});
+\code{elevation}, the mesh point elevations; \code{privars}, named \code{list}
+of additional 'private' variables.
 }
 \description{
 Reads the geometry / mesh information of a TELEMAC project from a SELAFIN file
+}
+\details{
+At least variable \code{BOTTOM} (bottom elevations of the mesh) is expected
+in the geometry file.
 }

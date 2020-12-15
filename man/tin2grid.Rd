@@ -20,7 +20,7 @@ tin2grid(x, s, output, ...)
   tinmat
 )
 
-\method{tin2grid}{t2d_geo}(x, s, output = c("list", "raster"), ...)
+\method{tin2grid}{t2d_geo}(x, s, output = c("list", "raster"), ..., v = "elevation")
 
 \method{tin2grid}{t2d_res}(x, s, output = c("list", "raster"), ..., v = NULL, t = 0)
 }
@@ -45,7 +45,8 @@ an object of class \code{t2d_geo} or \code{t2d_res}.}
 defining the mesh elements.}
 
 \item{v}{\code{character}, name of the variable that is to be extracted and
-interpolated (default is to take the first variable that can be found).}
+interpolated (default is to take the first variable that can be found).
+If \code{x} is of class \code{t2d_geo} \code{elevation} will be taken by default.}
 
 \item{t}{\code{integer}, timestep that is to be extracted and interpolated
 (default results in the first timestep).}

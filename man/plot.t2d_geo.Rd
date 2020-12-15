@@ -4,12 +4,15 @@
 \alias{plot.t2d_geo}
 \title{Plot TELEMAC geometry}
 \usage{
-\method{plot}{t2d_geo}(x, s, ...)
+\method{plot}{t2d_geo}(x, s, v = "elevation", ...)
 }
 \arguments{
 \item{x}{An object of class \code{t2d_geo}.}
 
 \item{s}{\code{numeric} value defining the resolution for plotting (the mesh has to be interpolated to a grid for that).}
+
+\item{v}{\code{character}, name of the variable that is to be plotted
+(only one at a time; default is \code{elevation}).}
 
 \item{...}{Arguments passed to \code{\link[raster]{plot}}.}
 }
