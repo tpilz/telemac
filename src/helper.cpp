@@ -16,6 +16,10 @@ DataFrame cas_lineadapt(DataFrame df, int sep_len) {
   int h = 0;
   std::string si, sp, st;
   std::vector<int> len_excess_i;
+  // regex via R base function grepl
+  Environment base("package:base");
+  Function grepl = base["grepl"];
+  LogicalVector grp(1);
 
   // get string lengths
   for (int i = 0; i < n; ++i) {
@@ -38,8 +42,17 @@ DataFrame cas_lineadapt(DataFrame df, int sep_len) {
       do {
         p = len_excess_i[i] + h + 1;
         st = value[p-1]; // value string to be split
-        si = st.substr(0, 72 - len_key_max); // first part of value string
-        sp = st.substr(72 - len_key_max, st.length() - si.length()); // second part
+        // if there is a slash only one line possible
+        grp = grepl("/", st);
+        if (grp[0]) {
+          si = ""; // first part empty
+          sp = st; // second part: whole string in new line
+          if (sp.length() > 72)
+            stop("Steering parameter values containing a slash '/' character must not be longer than 72 characters!");
+        } else {
+          si = st.substr(0, 72 - len_key_max); // first part of value string
+          sp = st.substr(72 - len_key_max, st.length() - si.length()); // second part
+        }
         // update key and value
         key.insert(key.begin() + p, "");
         value[p-1] = si;
