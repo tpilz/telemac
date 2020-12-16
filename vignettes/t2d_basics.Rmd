@@ -27,7 +27,7 @@ Aside from `R` and the `telemac` package (and its package dependencies) the Open
 
 In addition we need some more R packages to run this demonstration, which include [tidyverse](https://www.tidyverse.org), [raster](https://cran.r-project.org/web/packages/raster/index.html), and [sf](https://r-spatial.github.io/sf/index.html). The packages can be installed directly from CRAN.
 
-```{r libraries}
+```{r libraries, message = FALSE}
 library(raster)
 library(sf)
 library(tidyverse)
@@ -172,8 +172,8 @@ t2d_obj <- simulate_t2d(t2d_obj, log = "test_run.log", res = "test_results.slf",
 Note that the results of a previous simulation run can be imported as well.
 
 ```{r import_results}
-t2d_obj$res <- results(system.file("telemac/results.slf", package = "telemac"),
-                       log = system.file("telemac/test_run.log", package = "telemac"),
+t2d_obj$res <- results(system.file("telemac/basics/results.slf", package = "telemac"),
+                       log = system.file("telemac/basics/test_run.log", package = "telemac"),
                        vars = "water depth")
 ```
 
