@@ -16,14 +16,17 @@ Writes all input files of a TELEMAC-2D project setup.
 This function is basically a wrapper around other \code{write_*} functions
 of the telemac package.
 
-The associated file of \code{t2d_res} will replace entry \code{RESULTS FILE}
+The associated file of \code{x$res} will replace entry \code{RESULTS FILE}
 in the steering parameters.
 
 If \code{x$wdir} does not exist, it will be created.
 
+If \code{x$wdir} is a relative path it will be considered reltive to the current
+working directory.
+
 All \code{t2d_*} objects will be written to the associated filenames into directory
 \code{wdir} (element of \code{x}). In case the associated
-filenames contain a path the files will be written relative to \code{wdir}.
+filenames contain a relative path the files will be written relative to \code{wdir}.
 
 Existing files will be silently overwritten!
 

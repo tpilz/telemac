@@ -100,14 +100,17 @@ print.t2d <- function(x, ...) {
 #' @note This function is basically a wrapper around other \code{write_*} functions
 #' of the telemac package.
 #'
-#' The associated file of \code{t2d_res} will replace entry \code{RESULTS FILE}
+#' The associated file of \code{x$res} will replace entry \code{RESULTS FILE}
 #' in the steering parameters.
 #'
 #' If \code{x$wdir} does not exist, it will be created.
 #'
+#' If \code{x$wdir} is a relative path it will be considered reltive to the current
+#' working directory.
+#'
 #' All \code{t2d_*} objects will be written to the associated filenames into directory
 #' \code{wdir} (element of \code{x}). In case the associated
-#' filenames contain a path the files will be written relative to \code{wdir}.
+#' filenames contain a relative path the files will be written relative to \code{wdir}.
 #'
 #' Existing files will be silently overwritten!
 #'
@@ -127,7 +130,10 @@ write_t2d <- function(x) {
   check_file(f_geo, "slf", check_rel = T)
   check_file(f_res, "slf", check_rel = T)
 
-  wdir_abs <- fs::path_wd(x$wdir)
+  if (fs::is_absolute_path(x$wdir))
+    wdir_abs <- x$wdir
+  else
+    wdir_abs <- fs::path_wd(x$wdir)
   fs::dir_create(wdir_abs)
 
   x$cas[["BOUNDARY CONDITIONS FILE"]] <- f_cli
@@ -135,9 +141,12 @@ write_t2d <- function(x) {
   x$cas[["RESULTS FILE"]] <- f_res
   x$cas[["TITLE"]] <- paste0("'", x$title, "'")
 
-  attr(x$cas, "file") <- file.path(wdir_abs, f_cas)
-  attr(x$cli, "file") <- file.path(wdir_abs, f_cli)
-  attr(x$geo, "file") <- file.path(wdir_abs, f_geo)
+  if (!fs::is_absolute_path(f_cas))
+    attr(x$cas, "file") <- file.path(wdir_abs, f_cas)
+  if (!fs::is_absolute_path(f_cli))
+    attr(x$cli, "file") <- file.path(wdir_abs, f_cli)
+  if (!fs::is_absolute_path(f_geo))
+    attr(x$geo, "file") <- file.path(wdir_abs, f_geo)
 
   write_cas(x)
   write_geo(x)
@@ -177,14 +186,20 @@ write_t2d <- function(x) {
 simulate_t2d <- function(x, log = "run.log", res = NULL, vars = "all") {
   x <- validate_t2d(x)
 
-  wdir_abs <- fs::path_wd(x$wdir)
+  if (fs::is_absolute_path(x$wdir))
+    wdir_abs <- x$wdir
+  else
+    wdir_abs <- fs::path_wd(x$wdir)
+  fs::dir_create(wdir_abs)
 
   # results file
   if (!is.null(res)) {
     f_res <- res
     check_file(f_res, "slf", check_rel = T)
     attr(x$res, "file") <- f_res
-    f_cas <- paste(wdir_abs, attr(x$cas, "file"), sep = "/")
+    f_cas <- attr(x$cas, "file")
+    if (!fs::is_absolute_path(f_cas))
+      f_cas <- file.path(wdir_abs, f_cas)
     if (file.exists(f_cas)) {
       cas_dat <- read_cas(f_cas)
       cas_dat[["RESULTS FILE"]] <- f_res
