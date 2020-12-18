@@ -33,6 +33,8 @@ sl2df <- function(x) {
 
 # sf (MULTI)LINESTRING geometry to data.frame with columns x, y, and line
 sf2df <- function(x) {
+  if (inherits(sf::st_geometry(x), "sfc_GEOMETRY"))
+    x <- sf::st_cast(x, "MULTILINESTRING")
   if (inherits(sf::st_geometry(x), "sfc_MULTILINESTRING")) {
     out <- data.frame(sf::st_coordinates(x)) %>%
       tidyr::unite(.data$L1, .data$L2, col = "line", sep = "") %>%
@@ -40,7 +42,7 @@ sf2df <- function(x) {
   } else if (inherits(sf::st_geometry(x), "sfc_LINESTRING")) {
     out <- data.frame(sf::st_coordinates(x)) %>%
       dplyr::rename(x = .data$X, y = .data$Y, line = .data$L1)
-  } else stop("Object's geometry must be of type LINESTRING or MULTILINESTRING!", call. = F)
+  } else stop("Object's geometry must be of type LINESTRING or MULTILINESTRING, or GEOMETRY that can be cast to the latter!", call. = F)
 
   out
 }

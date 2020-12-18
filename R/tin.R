@@ -61,19 +61,27 @@ validate_tin <- function(x) {
 #'     \code{points}, the vertices of the breaklines (used for mesh refinement during
 #'     triangulation).}
 #' }
-#' @examples
-#' library(sf)
+#' @details If \code{x} is a \code{list} this function creates a Triangulated Irregular Network
+#' (TIN) using function \code{\link[RTriangle]{triangulate}}. The following \code{list}
+#' elements are required to perform the triangulation:
+#' \describe{
+#'   \item{boundary}{A \code{matrix}, \code{data.frame}, \code{SpatialLines*} or \code{sf} object
+#'     with two columns, each row defining a point along
+#'     the outer catchment boundary. Points are connected one-by-one to a line starting
+#'     with the first point, i.e. make sure points are in the right order! The first and
+#'     last point will be connected to close the boundary.}
+#'   \item{breaklines}{OPTIONAL, a \code{matrix}, \code{data.frame}, \code{SpatialLines*} or \code{sf}
+#'     object with three columns
+#'     \code{x} and \code{y}, the x and y coordinates of vortices along the breaklines,
+#'     and \code{line}, an identifier to identify individual breaklines.}
+#' }
+#' @note
+#' Duplicated mesh points are silently removed.
 #'
-#' # load boundary as sf linestring
-#' bnd <- st_read(system.file("dem/boundary_lagos.gpkg", package = "telemac"))
-#'
-#' # create t2d_tin object
-#' tin_obj <- tin(list(boundary = bnd), s = 90, a = 100^2, q = 30)
-#'
-#' # inspection
-#' tin_obj
-#' str(tin_obj)
-#' plot(tin_obj, pch = ".")
+#' Make sure breaklines do not intersect as this is not supported by the Triangle
+#' algorithm. A possible workaround to split intersecting breaklines in R using
+#' [sf](https://r-spatial.github.io/sf) is shown in the examples.
+#' @example inst/examples/tin.R
 #' @export
 tin <- function(x, ...) UseMethod("tin")
 
@@ -111,25 +119,6 @@ tin.matrix <- function(x, ..., ikle, ipobo) {
 #' Default: squared spacing of points (either given as \code{s} or inferred from \code{x$boundary}).
 #' @param q \code{numeric}, minimum triangle angle; passed to \code{\link[RTriangle]{triangulate}}.
 #' Default: 30 degrees.
-#' @details If \code{x} is a \code{list} this function creates a Triangulated Irregular Network
-#' (TIN) using function \code{\link[RTriangle]{triangulate}}. The following \code{list}
-#' elements are required to perform the triangulation:
-#' \describe{
-#'   \item{boundary}{A \code{matrix}, \code{data.frame}, \code{SpatialLines*} or \code{sf} object
-#'     with two columns, each row defining a point along
-#'     the outer catchment boundary. Points are connected one-by-one to a line starting
-#'     with the first point, i.e. make sure points are in the right order! The first and
-#'     last point will be connected to close the boundary.}
-#'   \item{breaklines}{OPTIONAL, a \code{matrix}, \code{data.frame}, \code{SpatialLines*} or \code{sf}
-#'     object with three columns
-#'     \code{x} and \code{y}, the x and y coordinates of vortices along the breaklines,
-#'     and \code{line}, an identifier to identify individual breaklines.}
-#' }
-#' @note
-#' Duplicated mesh points are silently removed.
-#'
-#' Make sure breaklines do not intersect as this is not supported by the Triangle
-#' algorithm.
 #' @name tin
 #' @export
 tin.list <- function(x, ..., s, s_brk, a, q = 30) {
@@ -141,7 +130,7 @@ tin.list <- function(x, ..., s, s_brk, a, q = 30) {
   if (inherits(x$boundary, "SpatialLines"))
     x$boundary <- sl2df(x$boundary)[,c("x", "y")]
 
-  if (inherits(x$boundary, "sf"))
+  if (inherits(x$boundary, c("sf", "sfc", "sfg")))
     x$boundary <- sf2df(x$boundary)[,c("x", "y")]
 
   # boundary points
@@ -161,7 +150,7 @@ tin.list <- function(x, ..., s, s_brk, a, q = 30) {
     if (inherits(x$breaklines, "SpatialLines"))
       x$breaklines <- sl2df(x$breaklines)
 
-    if (inherits(x$breaklines, "sf"))
+    if (inherits(x$breaklines, c("sf", "sfc", "sfg")))
       x$breaklines <- sf2df(x$breaklines)
 
     brks <- as.data.frame(x$breaklines)[,c("x", "y", "line")]
@@ -179,6 +168,7 @@ tin.list <- function(x, ..., s, s_brk, a, q = 30) {
       dplyr::mutate(i = 1:dplyr::n()) %>%
       dplyr::select(.data$line, .data$i) %>%
       dplyr::group_by(.data$line) %>%
+      dplyr::filter(dplyr::n() > 1) %>% # remove single points if there are any
       tidyr::nest(pos = .data$i) %>%
       dplyr::mutate(s1 = purrr::map(.data$pos, ~ seq(dplyr::first(.x$i), dplyr::nth(.x$i, -2)) + nrow(pts)),
                     s2 = purrr::map(.data$pos, ~ seq(dplyr::nth(.x$i, 2), dplyr::last(.x$i)) + nrow(pts))) %>%
