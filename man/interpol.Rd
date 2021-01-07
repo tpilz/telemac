@@ -25,8 +25,9 @@ an object of class \code{t2d_tin}.}
 
 \item{src}{The source locations. Either: a \code{matrix} with x and y coordinates
 (argument \code{z} as to be provided); a \code{data.frame} with x and y coordinates and
-the variable of interest (\code{"z"}); an object of class \code{\link[sp]{SpatialPointsDataFrame}};
-an object of class \code{\link[raster]{raster}}.}
+the variable of interest (\code{"z"}); an object of class \code{\link[sp]{SpatialPointsDataFrame}},
+\code{\link[raster]{raster}}, or \href{https://r-spatial.github.io/stars/index.html}{stars}
+(only the first attribute is taken).}
 
 \item{...}{Further arguments passed to \code{\link[gstat]{idw}}.}
 

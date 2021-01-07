@@ -29,6 +29,7 @@ Imports:
     Rcpp,
     rlang,
     RTriangle,
+    sf,
     sp,
     stringr,
     sys,
@@ -38,7 +39,7 @@ Suggests:
     knitr,
     plotly,
     rmarkdown,
-    sf,
+    stars,
     terrainmeshr,
     tidyverse
 RoxygenNote: 7.1.1

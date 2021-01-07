@@ -230,8 +230,9 @@ line_spacing.SpatialLinesDataFrame <- function(x, s, output = "sp", ...)
 #' an object of class \code{t2d_tin}.
 #' @param src The source locations. Either: a \code{matrix} with x and y coordinates
 #' (argument \code{z} as to be provided); a \code{data.frame} with x and y coordinates and
-#' the variable of interest (\code{"z"}); an object of class \code{\link[sp]{SpatialPointsDataFrame}};
-#' an object of class \code{\link[raster]{raster}}.
+#' the variable of interest (\code{"z"}); an object of class \code{\link[sp]{SpatialPointsDataFrame}},
+#' \code{\link[raster]{raster}}, or \href{https://r-spatial.github.io/stars/index.html}{stars}
+#' (only the first attribute is taken).
 #' @param n The number of nearest neighbours used for interpolation (default is 5).
 #' @param output The type of output: \code{numeric}, \code{sp}, or \code{data.frame} (see below).
 #' @param ... Further arguments passed to \code{\link[gstat]{idw}}.
@@ -269,6 +270,10 @@ interpol.SpatialPoints <- function(trg, src, ..., z, n = 5, output = "sp") {
     src <- src
   } else if (inherits(src, "Raster")) {
     src <- sp::SpatialPointsDataFrame(raster::coordinates(src), data.frame(z = raster::values(src)))
+  } else if (inherits(src, "stars")) {
+    if (!requireNamespace("stars", quietly = TRUE))
+      stop("Package \"stars\" is needed. Please install it.", call. = FALSE)
+    src <- sp::SpatialPointsDataFrame(sf::st_coordinates(src), data.frame(z = c(src[[1]])))
   } else
     stop("Argument 'src' is of unsupported type!", call. = F)
 
