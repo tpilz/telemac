@@ -241,7 +241,7 @@ print.t2d_geo <- function(x, ...) {
 #'
 #' @param fname \code{character} File name of the geometry file to be read.
 #' @param privar \code{logical}, shall variables in addition to bottom elevation
-#' (in TELEMAC denoted as private variables) be imported as well? Default: \code{TRUE}.
+#' (in TELEMAC denoted as private variables) be imported if available? Default: \code{TRUE}.
 #' @return A \code{list} with header information (see output of \code{\link{read_slf_header}});
 #' \code{elevation}, the mesh point elevations; \code{privars}, named \code{list}
 #' of additional 'private' variables.
@@ -259,6 +259,7 @@ read_geo <- function(fname, privar = TRUE) {
 
   # read variable (mesh point elevation) values
   i_elev <- which(stringr::str_to_lower(x_head$varnames) == "bottom")
+  if (x_head$nbv1 == 1) privar <- FALSE
   if (privar)
     vars <- seq_len(x_head$nbv1)
   else

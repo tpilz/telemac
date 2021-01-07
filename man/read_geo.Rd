@@ -10,7 +10,7 @@ read_geo(fname, privar = TRUE)
 \item{fname}{\code{character} File name of the geometry file to be read.}
 
 \item{privar}{\code{logical}, shall variables in addition to bottom elevation
-(in TELEMAC denoted as private variables) be imported as well? Default: \code{TRUE}.}
+(in TELEMAC denoted as private variables) be imported if available? Default: \code{TRUE}.}
 }
 \value{
 A \code{list} with header information (see output of \code{\link{read_slf_header}});
