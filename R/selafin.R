@@ -257,12 +257,12 @@ write_slf_header <- function(fname, header) {
 
   # IKLE, mesh connectivities
   writeBin(4L*header$nelem*header$ndp, con, size = 4, endian = "big")
-  writeBin(as.vector(t(header$ikle)), con, size = 4, endian = "big")
+  writeBin(as.integer(t(header$ikle)), con, size = 4, endian = "big")
   writeBin(4L*header$nelem*header$ndp, con, size = 4, endian = "big")
 
   # IPOBO, boundaries
   writeBin(4L*header$npoin, con, size = 4, endian = "big")
-  writeBin(header$ipobo, con, size = 4, endian = "big")
+  writeBin(as.integer(header$ipobo), con, size = 4, endian = "big")
   writeBin(4L*header$npoin, con, size = 4, endian = "big")
 
   # X/Y coordinates
