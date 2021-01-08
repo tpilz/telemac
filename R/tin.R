@@ -34,6 +34,11 @@ validate_tin <- function(x) {
     stopifnot(ncol(x$breaklines) == 2)
   }
 
+  # all points must occur in triangles and edges
+  if (any(!(1:nrow(x$points) %in% unique(c(x$triangles)))) ||
+      any(!(1:nrow(x$points) %in% unique(c(x$edges)))))
+    stop("There are 'points' not occurring in 'triangles' and / or 'edges'!", call. = F)
+
   x
 }
 
@@ -164,7 +169,7 @@ tin.list <- function(x, ..., s, s_brk, a, q = 30) {
     if (any(duplicated(brks[,c("x", "y")])))
       stop("There are dplicated points in the breaklines, e.g. because breaklines intersect, which is not supported by the Triangle algorithm!", call. = F)
 
-    seg_break <- brks %>%
+    seg_brk <- brks %>%
       dplyr::mutate(i = 1:dplyr::n()) %>%
       dplyr::select(.data$line, .data$i) %>%
       dplyr::group_by(.data$line) %>%
@@ -176,8 +181,19 @@ tin.list <- function(x, ..., s, s_brk, a, q = 30) {
       dplyr::select(.data$s1, .data$s2) %>%
       tidyr::unnest(cols = c(.data$s1, .data$s2)) %>%
       as.matrix()
+    # merge boundary and breakline points and segments
     pts <- rbind(pts, as.matrix(brks[,c("x", "y")]))
-    seg <- rbind(seg, seg_break)
+    seg <- rbind(seg, seg_brk)
+  }
+
+  # there might be points not pointed to by segments which have to be removed and segments need to be updated accordingly
+  pts_rm <- which(!(1:nrow(pts) %in% unique(c(seg))))
+  if (any(pts_rm)) {
+    pts <- pts[-pts_rm,]
+    for (i in seq_along(pts_rm)) {
+      i_rm <- seg > (pts_rm[i] - i + 1)
+      seg[i_rm] <- seg[i_rm] - 1
+    }
   }
 
   # triangulate
@@ -189,6 +205,22 @@ tin.list <- function(x, ..., s, s_brk, a, q = 30) {
       a <- s^2
     }
   tri <- RTriangle::triangulate(pts_pslg, a = a, q = q, ...)
+
+  # there might be points that are not part of triangles and cause problems in TELEMAC
+  pts_rm <- which(!(1:nrow(tri$P) %in% unique(c(tri$T))))
+  if (any(pts_rm)) {
+    tri$P <- tri$P[-pts_rm,]
+    for (i in seq_along(pts_rm)) {
+      i_rm <- tri$T > (pts_rm[i] - i + 1)
+      tri$T[i_rm] <- tri$T[i_rm] - 1
+
+      i_rm <- tri$E > (pts_rm[i] - i + 1)
+      tri$E[i_rm] <- tri$E[i_rm] - 1
+
+      i_rm <- tri$S > (pts_rm[i] - i + 1)
+      tri$S[i_rm] <- tri$S[i_rm] - 1
+    }
+  }
 
   # t2d_tin object
   if ("breaklines" %in% names(x))
