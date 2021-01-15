@@ -38,6 +38,7 @@ Imports:
 Suggests: 
     knitr,
     plotly,
+    rgdal,
     rmarkdown,
     stars,
     terrainmeshr,

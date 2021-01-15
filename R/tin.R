@@ -39,6 +39,23 @@ validate_tin <- function(x) {
       any(!(1:nrow(x$points) %in% unique(c(x$edges)))))
     stop("There are 'points' not occurring in 'triangles' and / or 'edges'!", call. = F)
 
+  # check boundary points (first points, continuous, anticlockwise)
+  bnd_fail <- paste0("The boundary points do not fullfill the requirements for TELEMAC: ",
+                     "outer boundary has to come first and point sequence has to be continuous!")
+  if (!all(x$boundaries %in% seq(1, length(x$boundaries))) ||
+      length(unique(x$boundaries)) != length(x$boundaries))
+    stop(paste0("Boundary points do not comply with requirements: ",
+                "outer boundary has to come first and point sequence has to be continuous!"), call. = F)
+  pts_bnd <- x$points[x$boundaries,]
+  pt_min_i <- which.min(pts_bnd[,2])
+  pts_check <- pts_bnd[pt_min_i + c(-1, 0, 1),]
+  # formula see https://en.wikipedia.org/wiki/Curve_orientation
+  det <- (pts_check[2,1] - pts_check[1,1]) * (pts_check[3,2] - pts_check[1,2]) -
+    (pts_check[3,1] - pts_check[1,1]) * (pts_check[2,2] - pts_check[1,2])
+  if (det < 0)
+    stop(paste0("Boundary points do not comply with requirements: ",
+                "orientation as to be anticlockwise!"), call. = F)
+
   x
 }
 
@@ -86,6 +103,13 @@ validate_tin <- function(x) {
 #' Make sure breaklines do not intersect as this is not supported by the Triangle
 #' algorithm. A possible workaround to split intersecting breaklines in R using
 #' [sf](https://r-spatial.github.io/sf) is shown in the examples.
+#'
+#' If you want to construct a \code{t2d_tin} object and get the error
+#' \code{Boundary points do not comply with requirements: [...]}
+#' the reason might be that breaklines are too close to the boundary causing that
+#' points of the breaklines are used as boundary points which eventually results
+#' in a discontinuous outer boundary. Try to increase the distance of breaklines
+#' to the catchment boundary.
 #' @example inst/examples/tin.R
 #' @export
 tin <- function(x, ...) UseMethod("tin")

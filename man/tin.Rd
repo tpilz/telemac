@@ -88,6 +88,13 @@ Duplicated mesh points are silently removed.
 Make sure breaklines do not intersect as this is not supported by the Triangle
 algorithm. A possible workaround to split intersecting breaklines in R using
 [sf](https://r-spatial.github.io/sf) is shown in the examples.
+
+If you want to construct a \code{t2d_tin} object and get the error
+\code{Boundary points do not comply with requirements: [...]}
+the reason might be that breaklines are too close to the boundary causing that
+points of the breaklines are used as boundary points which eventually results
+in a discontinuous outer boundary. Try to increase the distance of breaklines
+to the catchment boundary.
 }
 \examples{
 
