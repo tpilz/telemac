@@ -40,8 +40,10 @@ with element \code{elevation} and further private variables from which the value
 be interpolated to the TIN mesh points. Each element will be forwarded to
 \code{\link{interpol}}, argument \code{src} (see descriptions therein for supported
 types). Private variables must be a list with elements \code{values} (the object passed
-to \code{interpol}) and \code{unit} (the unit of the variable). You can pass further
-arguments for interpolation, e.g. the numer of neighbours \code{n} etc.}
+to \code{interpol}), \code{pars_interp} (variable-specific parameter \code{list} passed to
+\code{interpol} with priority over \code{...}), and \code{unit} (the unit of the
+variable). Parameters for interpolation include, e.g., the number of neighbours
+\code{n}, etc.}
 
 \item{title}{\code{character}, mesh title (not necessary, max. 72 characters).}
 }
@@ -92,7 +94,7 @@ plot(geo_obj, s = 30)
 dem_priv <- list(
   # mandatory 'elevation' as raster object
   elevation = dem_rast,
-  # additional variable 'cn' as data.frame
+  # additional variable 'cn' as (in this case) data.frame
   cn = list(values = as.data.frame(dem_rast, xy = TRUE, na.rm = TRUE) \%>\%
               select(x, y) \%>\%
               mutate(z = case_when(
@@ -100,7 +102,9 @@ dem_priv <- list(
                 x > 534000 ~ 90,
                 (x <= 534000) & (y <= 740000) ~ 80
               )),
-            unit = "-")
+            unit = "-",
+            # nearest-neighbour interpolation of CN values
+            pars_interp = list(n = 1))
 )
 
 geo_priv <- geo(tin_obj, dem = dem_priv)

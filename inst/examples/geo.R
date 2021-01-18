@@ -25,7 +25,7 @@ plot(geo_obj, s = 30)
 dem_priv <- list(
   # mandatory 'elevation' as raster object
   elevation = dem_rast,
-  # additional variable 'cn' as data.frame
+  # additional variable 'cn' as (in this case) data.frame
   cn = list(values = as.data.frame(dem_rast, xy = TRUE, na.rm = TRUE) %>%
               select(x, y) %>%
               mutate(z = case_when(
@@ -33,7 +33,9 @@ dem_priv <- list(
                 x > 534000 ~ 90,
                 (x <= 534000) & (y <= 740000) ~ 80
               )),
-            unit = "-")
+            unit = "-",
+            # nearest-neighbour interpolation of CN values
+            pars_interp = list(n = 1))
 )
 
 geo_priv <- geo(tin_obj, dem = dem_priv)

@@ -58,3 +58,16 @@ check_symbols <- function(x) {
   }
   x
 }
+
+
+# wrapper for interpol() of private data given as list elements (p)
+interpol_privar <- function(x, p, output, ...) {
+  dots <- list(...)
+  args <- list(trg = x, src = p$values, output = output)
+  args = c(args, dots)
+  if ("pars_interp" %in% names(p))
+    args <- modifyList(args, p$pars_interp)
+
+  list(values = do.call("interpol", args),
+       unit = p$unit)
+}

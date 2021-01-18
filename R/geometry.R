@@ -185,8 +185,10 @@ geo.t2d_geo <- function(x, fname = NULL, data = NULL, ...) {
 #' be interpolated to the TIN mesh points. Each element will be forwarded to
 #' \code{\link{interpol}}, argument \code{src} (see descriptions therein for supported
 #' types). Private variables must be a list with elements \code{values} (the object passed
-#' to \code{interpol}) and \code{unit} (the unit of the variable). You can pass further
-#' arguments for interpolation, e.g. the numer of neighbours \code{n} etc.
+#' to \code{interpol}), \code{pars_interp} (variable-specific parameter \code{list} passed to
+#' \code{interpol} with priority over \code{...}), and \code{unit} (the unit of the
+#' variable). Parameters for interpolation include, e.g., the number of neighbours
+#' \code{n}, etc.
 #' @param title \code{character}, mesh title (not necessary, max. 72 characters).
 #' @name geo
 #' @export
@@ -204,8 +206,7 @@ geo.t2d_tin <- function(x, fname = NULL, ..., dem, title = "") {
     privar[["elevation"]] <- NULL
     if (!all(sapply(privar, inherits, "list")) && !all(sapply(privar, function(p) all(names(p) %in% c("values", "unit")))))
       stop("Private variables in 'dem' must each be given as named list with elements 'values' and 'unit'!", call. = F)
-    privar <- purrr::map(privar, function(p) list(values = interpol(x, p$values, output = "numeric", ...),
-                                                  unit = p$unit))
+    privar <- purrr::map(privar, function(p) interpol_privar(x, p, output = "numeric", ...))
   } else {
     elev <- interpol(x, dem, output = "numeric", ...)
     privar <- NULL
