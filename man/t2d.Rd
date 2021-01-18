@@ -52,3 +52,21 @@ Initialises a project for 2-dimensional hydrodynamic modelling with TELEMAC-2D.
 \details{
 First, make sure TELEMAC-2D is installed and works!
 }
+\examples{
+library(sf)
+library(raster)
+
+# template setup with example data
+bnd <- st_read(system.file("dem/boundary_lagos.gpkg", package = "telemac"))
+dem_rast <- raster(system.file("dem/dem_merit_lagos.tif", package = "telemac"))
+tin_obj <- tin(list(boundary = bnd), s = 90, a = 100^2, q = 30)
+geo_obj <- geo(tin_obj, dem = dem_rast)
+cli_obj <- cli(geo_obj)
+cas_obj <- cas()
+
+# TELEMAC-2D setup
+t2d_obj <- t2d("Test setup", "path/to/wdir", exec = "telemac2d.py",
+               cas = cas_obj, geo = geo_obj, cli = cli_obj)
+t2d_obj
+
+}

@@ -66,7 +66,7 @@ interpol_privar <- function(x, p, output, ...) {
   args <- list(trg = x, src = p$values, output = output)
   args = c(args, dots)
   if ("pars_interp" %in% names(p))
-    args <- modifyList(args, p$pars_interp)
+    args <- utils::modifyList(args, p$pars_interp)
 
   list(values = do.call("interpol", args),
        unit = p$unit)

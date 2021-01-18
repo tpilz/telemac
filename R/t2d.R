@@ -7,7 +7,10 @@ new_t2d <- function(title, wdir, exec, cas_in, geo_in, cli_in, res_in) {
   cas_obj <- cas(cas_in)
   geo_obj <- geo(geo_in)
   cli_obj <- cli(cli_in)
-  res_obj <- results(res_in)
+  if (is.null(res_in) && !is.null(cas_obj[["RESULTS FILE"]]))
+    res_obj <- results(res_in, fname = cas_obj[["RESULTS FILE"]])
+  else
+    res_obj <- results(res_in)
 
   structure(
     list(title = title,
@@ -67,9 +70,28 @@ validate_t2d <- function(x) {
 #'
 #' @details First, make sure TELEMAC-2D is installed and works!
 #'
+#' @examples
+#' library(sf)
+#' library(raster)
+#'
+#' # template setup with example data
+#' bnd <- st_read(system.file("dem/boundary_lagos.gpkg", package = "telemac"))
+#' dem_rast <- raster(system.file("dem/dem_merit_lagos.tif", package = "telemac"))
+#' tin_obj <- tin(list(boundary = bnd), s = 90, a = 100^2, q = 30)
+#' geo_obj <- geo(tin_obj, dem = dem_rast)
+#' cli_obj <- cli(geo_obj)
+#' cas_obj <- cas()
+#'
+#' # TELEMAC-2D setup
+#' t2d_obj <- t2d("Test setup", "path/to/wdir", exec = "telemac2d.py",
+#'                cas = cas_obj, geo = geo_obj, cli = cli_obj)
+#' t2d_obj
+#'
 #' @export
 t2d <- function(title = "", wdir = ".", exec = "telemac2d.py",
                 cas = NULL, geo = NULL, cli = NULL, res = NULL) {
+  if (any(is.null(c(cas, geo, cli))))
+    stop("Arguments 'cas', 'geo', and 'cli' are required!", call. = F)
   validate_t2d(new_t2d(title, wdir, exec, cas, geo, cli, res))
 }
 
@@ -86,7 +108,13 @@ print.t2d <- function(x, ...) {
   cat("Steering parameters:    A t2d_cas object pointing to", attr(x$cas, "file"), "\n")
   cat("Geometry / mesh:        A t2d_geo object pointing to", attr(x$geo, "file"), "\n")
   cat("Boundary conditions:    A t2d_cli object pointing to", attr(x$cli, "file"), "\n")
-  cat("Simulation results:     A t2d_res object pointing to", attr(x$res, "file"), "\n")
+  cat("Simulation results:     A t2d_res object pointing to", attr(x$res, "file"))
+  if (!file.exists(paste(x$wdir, attr(x$res, "file"), sep = "/")))
+    cat(" (file does not yet exist)\n")
+  else if (is.null(x$res$values))
+    cat(" (no results imported yet)\n")
+  else
+    cat("\n")
 
   invisible(x)
 }

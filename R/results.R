@@ -58,7 +58,8 @@ validate_res <- function(x) {
 #'
 #' @param x Either: \code{NULL} (default), in which case a simple template without data will be generated;
 #'    a \code{character} string providing the name of an existing results file;
-#'    an object of class \code{t2d_res}.
+#'    an object of class \code{t2d_res} (modify attributes);
+#'    an object of class \code{t2d} (read data after model run).
 #' @param fname \code{character}, name for the associated results file (can also be used to replace an existing entry).
 #' @param ... Arguments passed to or from other methods.
 #' @return An object of class \code{t2d_res} consisting of an attribute \code{file}
@@ -78,7 +79,7 @@ validate_res <- function(x) {
 #' }
 #' @note Also note the associated \code{\link{plot.t2d_res}} method.
 #' @export
-results <- function(x, fname, ...) UseMethod("results")
+results <- function(x, ...) UseMethod("results")
 
 #' @name results
 #' @export
@@ -125,6 +126,17 @@ results.t2d_res <- function(x, fname = NULL, log = NULL, ...) {
   validate_res(new_res(data, logdata, fname, log))
 }
 
+#' @name results
+#' @export
+results.t2d <- function(x, ...) {
+  if (attr(x$res, "log") != "<unspecified>")
+    logf <- paste(x$wdir, attr(x$res, "log"), sep = "/")
+  else
+    logf <- NULL
+  results.character(paste(x$wdir, attr(x$res, "file"), sep = "/"),
+                    fname = attr(x$res, "file"), log = logf, ...)
+}
+
 
 #' @name results
 #' @param n Maximum number of steering parameters to print.
@@ -133,7 +145,7 @@ print.t2d_res <- function(x, ..., n = 10) {
   cat("Object of class t2d_res: TELEMAC simulation results\n")
   cat("Associated results file:", attr(x, "file"), "\n")
   if (is.null(x$header)) {
-    cat("No results are yet available (otherwise use results() to import them).")
+    cat("No results available yet (otherwise use results() to import them).")
   } else {
     cat("Associated log file:", attr(x, "log"), "\n")
     cat("Simulation title:", x$header$title, "\n")
@@ -141,7 +153,7 @@ print.t2d_res <- function(x, ..., n = 10) {
     cat(paste0(x$header$varnames, " (", x$header$varunits, ")"), sep = ", ")
     cat("\n")
     if (is.null(x$values)) {
-      cat("No results yet imported into R.")
+      cat("No results imported yet.")
     } else {
       times <- unique(x$values$timestep)
       cat("over", length(times), "timesteps (", min(times), ", ...,", max(times), ").\n")

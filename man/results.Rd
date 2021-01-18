@@ -5,10 +5,11 @@
 \alias{results.default}
 \alias{results.character}
 \alias{results.t2d_res}
+\alias{results.t2d}
 \alias{print.t2d_res}
 \title{Results  object}
 \usage{
-results(x, fname, ...)
+results(x, ...)
 
 \method{results}{default}(x = NULL, fname = "results.slf", ...)
 
@@ -16,16 +17,19 @@ results(x, fname, ...)
 
 \method{results}{t2d_res}(x, fname = NULL, log = NULL, ...)
 
+\method{results}{t2d}(x, ...)
+
 \method{print}{t2d_res}(x, ..., n = 10)
 }
 \arguments{
 \item{x}{Either: \code{NULL} (default), in which case a simple template without data will be generated;
 a \code{character} string providing the name of an existing results file;
-an object of class \code{t2d_res}.}
-
-\item{fname}{\code{character}, name for the associated results file (can also be used to replace an existing entry).}
+an object of class \code{t2d_res} (modify attributes);
+an object of class \code{t2d} (read data after model run).}
 
 \item{...}{Arguments passed to or from other methods.}
+
+\item{fname}{\code{character}, name for the associated results file (can also be used to replace an existing entry).}
 
 \item{log}{File name of a log file from a simulation run, if it exists.}
 
