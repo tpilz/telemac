@@ -6,13 +6,23 @@
 #' @param x Either: a \code{data.frame} with mesh coordinates and elevations;
 #'    an object of class \code{t2d_geo} or \code{t2d_res}.
 #' @param s \code{numeric} value defining the resolution of the output grid.
-#' @param output \code{character}, either: \code{"list"} to return a \code{list} object;
-#'    \code{"raster"} to return a \code{\link[raster]{raster}} object.
+#' @param output \code{character}, either: \code{"data.frame"} (default), \code{"list"}, or
+#'    \code{"raster"} to return a \code{\link[raster]{raster}} object. If multiple variables
+#'    \code{v} or timesteps \code{t} are given, a \code{data.frame} will be returned in any case.
 #' @param ... Arguments passed to or from other methods.
-#' @param v \code{character}, name of the variable that is to be extracted and
-#' interpolated (default is to take the first variable that can be found).
+#' @param v \code{character}, name of the variable(s) that is/are to be extracted and
+#' interpolated (default all variables that can be found).
 #' If \code{x} is of class \code{t2d_geo} \code{elevation} will be taken by default.
-#' @return If \code{output == "list"}: A \code{list} with:
+#' @return If \code{output == "data.frame"}: A \code{data.frame} with:
+#' \describe{
+#'   \item{x or \code{col_x}}{X coordinates of the output grid}
+#'   \item{y or \code{col_y}}{Y coordinates of the output grid}
+#'   \item{z or \code{col_z}}{Interpolated values}
+#'   \item{variable}{OPTIONAL (more than one given): imported variable the current values refer to}
+#'   \item{timestep}{OPTIONAL (more than one given): simulation timestep the current values refer to}
+#' }
+#'
+#' If \code{output == "list"}: A \code{list} with:
 #' \describe{
 #'   \item{x}{X coordinates of the output grid}
 #'   \item{y}{Y coordinates of the output grid}
@@ -20,6 +30,10 @@
 #' }
 #'
 #' If \code{output == "raster"}: An object of class \code{\link[raster]{raster}}.
+#' @note If you import many variables or timesteps or the mesh is huge or \code{s} very small
+#' the resulting dataset might become excessively large (especially if \code{output} is a
+#' \code{data.frame})!
+#' @example inst/examples/tin2grid.R
 #' @export
 tin2grid <- function(x, s, output, ...) UseMethod("tin2grid")
 
@@ -33,7 +47,7 @@ tin2grid <- function(x, s, output, ...) UseMethod("tin2grid")
 #' their names, quoted or unquoted, or as column position.
 #' @name tin2grid
 #' @export
-tin2grid.data.frame <- function(x, s, output = c("list", "raster"), ..., col_x = "x", col_y = "y", col_z = "z", tinmat) {
+tin2grid.data.frame <- function(x, s, output = c("data.frame", "list", "raster"), ..., col_x = "x", col_y = "y", col_z = "z", tinmat) {
   output <- match.arg(output)
   stopifnot(inherits(x, "data.frame"))
   stopifnot(all(sapply(list(tinmat, s), is.numeric)))
@@ -52,7 +66,10 @@ tin2grid.data.frame <- function(x, s, output = c("list", "raster"), ..., col_x =
 
   # output
   out <- NULL
-  if (output == "list") {
+  if (output == "data.frame") {
+    out <- tidyr::expand_grid(!! x_var := xgrd, !! y_var := ygrd) %>%
+      dplyr::mutate(!! z_var := c(t(grd)))
+  } else if (output == "list") {
     out <- list(x = xgrd, y = ygrd, z = grd)
   } else if (output == "raster") {
     grd <- t(grd)
@@ -64,47 +81,97 @@ tin2grid.data.frame <- function(x, s, output = c("list", "raster"), ..., col_x =
 
 #' @name tin2grid
 #' @export
-tin2grid.t2d_geo <- function(x, s, output = c("list", "raster"), ..., v = "elevation") {
+tin2grid.t2d_geo <- function(x, s, output = c("data.frame", "list", "raster"), ..., v = "elevation") {
+  # checks
   x <- validate_geo(x)
-  if (v == "elevation")
-    z <- x[[v]]
-  else {
-    if (!(v %in% names(x$privars)))
-      stop("Variable given in 'v' not found in x$privars!", call. = F)
-    z <- x$privars[[v]]$values
+  output <- match.arg(output)
+  if (any(!(v %in% c("elevation", names(x$privars)))))
+    stop("The following variable(s) was/were not found in the geometry file: ",
+         paste(v[which(!(v %in% c("elevation", names(x$privars))))], collapse = ", "),
+         call. = F)
+  if (output != "data.frame" && length(v) > 1) {
+    output <- "data.frame"
+    warning("Output will be a data.frame when more than one variable 'v' is given!",
+            call. = F)
   }
-  df <- data.frame(x = x$tin$points[,1], y = x$tin$points[,2], z = z)
-  tin2grid.data.frame(df, tinmat = x$tin$triangles, s = s, output = output)
+
+  # get values
+  v_priv <- grep("elevation", v, invert = T, value = T)
+
+  vals <- NULL
+  if ("elevation" %in% v)
+    vals <- c(vals, x[["elevation"]])
+  if (length(v_priv) > 0)
+    vals <- c(vals, c(sapply(x$privars[v_priv], `[[`, "values")))
+
+  # call tin2grid.data.frame()
+  out <- NULL
+  if (output == "data.frame") {
+    vars <- if("elevation" %in% v) c("elevation", v_priv) else v_priv
+    out <- data.frame(x = rep(x$tin$points[,1], length(vars)),
+               y = rep(x$tin$points[,2], length(vars)),
+               value = vals,
+               variable = rep(vars, each = nrow(x$tin$points) * length(vars))) %>%
+      tidyr::nest(data = c(.data$x, .data$y, .data$value)) %>%
+      dplyr::mutate(interpol = purrr::map(.data$data,
+                                          ~ tin2grid.data.frame(.x, tinmat = x$tin$triangles, s = s,
+                                                                output = "data.frame", col_z = "value"))) %>%
+      dplyr::select(.data$interpol, .data$variable) %>%
+      tidyr::unnest(.data$interpol)
+  } else if (output %in% c("raster", "list"))
+    out <- tin2grid.data.frame(data.frame(x = x$tin$points[,1], y = x$tin$points[,2], z = vals),
+                               tinmat = x$tin$triangles, s = s, output = output)
+
+  out
 }
 
-#' @param t \code{integer}, timestep that is to be extracted and interpolated
-#' (default results in the first timestep).
+#' @param t \code{integer}, timestep(s) that is/are to be extracted and interpolated
+#' (default: all timesteps).
 #' @name tin2grid
 #' @export
-tin2grid.t2d_res <- function(x, s, output = c("list", "raster"), ..., v = NULL, t = 0) {
-  if (is.null(v)) v <- 1
-  if (any(c(length(v), length(t)) > 1))
-    stop("Only one variable 'v' and timestep 't' at a time is supported!")
+tin2grid.t2d_res <- function(x, s, output = c("data.frame", "list", "raster"), ..., v = NULL, t = NULL) {
   x <- validate_res(x)
+
+  output <- match.arg(output)
 
   vars <- unique(x$values$variable)
   if (is.numeric(v)) v <- vars[v]
+  if (is.null(v)) v <- vars
 
   if (!all(v %in% vars))
     stop("There are variables requested that are not available in the data!", call. = F)
 
   times <- unique(x$values$timestep)
+  if (is.null(t)) t <- times
   if (!all(t %in% times))
     stop("There are timesteps requested that are not available in the data!", call. = F)
 
-  # select data (variables and timesteps)
-  dat_sel <- x$values %>%
-    dplyr::filter(stringr::str_to_lower(.data$variable) == stringr::str_to_lower(v) & .data$timestep == t)
-  dat_sel <- arrange_meshdata(x$tin$points[,1], x$tin$points[,2], v, dat_sel)
+  if (output != "data.frame" && any(c(length(v) > 1, length(t) > 1))) {
+    output <- "data.frame"
+    warning("Output will be a data.frame when more than one variable 'v' or timestep 't' is given!",
+            call. = F)
+  }
 
-  # call main function
-  df <- data.frame(x = dat_sel$x, y = dat_sel$y, z = dat_sel$value)
-  tin2grid.data.frame(df, tinmat = x$tin$triangles, s = s, output = output)
+  # call tin2grid.data.frame()
+  out <- NULL
+  if (output == "data.frame") {
+    out <- x$values %>%
+      dplyr::filter(.data$timestep %in% t & .data$variable %in% v) %>%
+      tidyr::nest(data = c(.data$x, .data$y, .data$value)) %>%
+      dplyr::mutate(interpol = purrr::map(.data$data,
+                                          ~ tin2grid.data.frame(.x, tinmat = x$tin$triangles, s = s,
+                                                                output = "data.frame", col_z = "value"))) %>%
+      dplyr::select(.data$interpol, .data$variable, .data$timestep) %>%
+      tidyr::unnest(.data$interpol)
+  } else if (output %in% c("raster", "list")) {
+    dat_sel <- x$values %>%
+      dplyr::filter(stringr::str_to_lower(.data$variable) == stringr::str_to_lower(v) & .data$timestep == t)
+    dat_sel <- arrange_meshdata(x$tin$points[,1], x$tin$points[,2], v, dat_sel)
+    out <- tin2grid.data.frame(data.frame(x = dat_sel$x, y = dat_sel$y, z = dat_sel$value),
+                               tinmat = x$tin$triangles, s = s, output = output)
+  }
+
+  out
 }
 
 

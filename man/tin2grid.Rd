@@ -12,7 +12,7 @@ tin2grid(x, s, output, ...)
 \method{tin2grid}{data.frame}(
   x,
   s,
-  output = c("list", "raster"),
+  output = c("data.frame", "list", "raster"),
   ...,
   col_x = "x",
   col_y = "y",
@@ -20,9 +20,22 @@ tin2grid(x, s, output, ...)
   tinmat
 )
 
-\method{tin2grid}{t2d_geo}(x, s, output = c("list", "raster"), ..., v = "elevation")
+\method{tin2grid}{t2d_geo}(
+  x,
+  s,
+  output = c("data.frame", "list", "raster"),
+  ...,
+  v = "elevation"
+)
 
-\method{tin2grid}{t2d_res}(x, s, output = c("list", "raster"), ..., v = NULL, t = 0)
+\method{tin2grid}{t2d_res}(
+  x,
+  s,
+  output = c("data.frame", "list", "raster"),
+  ...,
+  v = NULL,
+  t = NULL
+)
 }
 \arguments{
 \item{x}{Either: a \code{data.frame} with mesh coordinates and elevations;
@@ -30,8 +43,9 @@ an object of class \code{t2d_geo} or \code{t2d_res}.}
 
 \item{s}{\code{numeric} value defining the resolution of the output grid.}
 
-\item{output}{\code{character}, either: \code{"list"} to return a \code{list} object;
-\code{"raster"} to return a \code{\link[raster]{raster}} object.}
+\item{output}{\code{character}, either: \code{"data.frame"} (default), \code{"list"}, or
+\code{"raster"} to return a \code{\link[raster]{raster}} object. If multiple variables
+\code{v} or timesteps \code{t} are given, a \code{data.frame} will be returned in any case.}
 
 \item{...}{Arguments passed to or from other methods.}
 
@@ -44,14 +58,23 @@ an object of class \code{t2d_geo} or \code{t2d_res}.}
 \item{tinmat}{\code{integer} matrix of point indices (referring to x and y coordinates)
 defining the mesh elements.}
 
-\item{v}{\code{character}, name of the variable that is to be extracted and
-interpolated (default is to take the first variable that can be found).
+\item{v}{\code{character}, name of the variable(s) that is/are to be extracted and
+interpolated (default all variables that can be found).
 If \code{x} is of class \code{t2d_geo} \code{elevation} will be taken by default.}
 
-\item{t}{\code{integer}, timestep that is to be extracted and interpolated
-(default results in the first timestep).}
+\item{t}{\code{integer}, timestep(s) that is/are to be extracted and interpolated
+(default: all timesteps).}
 }
 \value{
+If \code{output == "data.frame"}: A \code{data.frame} with:
+\describe{
+  \item{x or \code{col_x}}{X coordinates of the output grid}
+  \item{y or \code{col_y}}{Y coordinates of the output grid}
+  \item{z or \code{col_z}}{Interpolated values}
+  \item{variable}{OPTIONAL (more than one given): imported variable the current values refer to}
+  \item{timestep}{OPTIONAL (more than one given): simulation timestep the current values refer to}
+}
+
 If \code{output == "list"}: A \code{list} with:
 \describe{
   \item{x}{X coordinates of the output grid}
@@ -66,7 +89,28 @@ Linearly interpolates the values of a mesh based on irregular triangles to a
 regular grid.
 }
 \note{
+If you import many variables or timesteps or the mesh is huge or \code{s} very small
+the resulting dataset might become excessively large (especially if \code{output} is a
+\code{data.frame})!
+
 If \code{x} is a \code{data.frame}, all input arguments referring to columns
 of \code{x} support \code{\link[rlang]{quasiquotation}}, i.e. they can be specified by
 their names, quoted or unquoted, or as column position.
+}
+\examples{
+# plot model bathymetry with ggplot
+library(raster)
+library(sf)
+library(tidyverse)
+# t2d_geo object
+bnd <- st_read(system.file("dem/boundary_lagos.gpkg", package = "telemac"))
+tin_obj <- tin(list(boundary = bnd), s = 90, a = 100^2, q = 30)
+dem_rast <- raster(system.file("dem/dem_merit_lagos.tif", package = "telemac"))
+geo_obj <- geo(tin_obj, dem = dem_rast)
+# interpolate to regular grid as df and plot
+geo_df <- tin2grid(geo_obj, s = 90, output = "data.frame")
+ggplot(geo_df, aes(x = x, y = y, fill = value)) +
+  geom_raster() +
+  coord_equal() +
+  scale_fill_viridis_c()
 }
