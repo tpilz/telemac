@@ -41,7 +41,7 @@ tin2grid <- function(x, s, output, ...) UseMethod("tin2grid")
 #' @param col_y If \code{x} is a \code{data.frame}: column with the y coordinates.
 #' @param col_z If \code{x} is a \code{data.frame}: column with the mesh values.
 #' @param tinmat \code{integer} matrix of point indices (referring to x and y coordinates)
-#' defining the mesh elements.
+#' defining the mesh elements (such as element \code{triangles} of a \code{t2d_tin} object).
 #' @note If \code{x} is a \code{data.frame}, all input arguments referring to columns
 #' of \code{x} support \code{\link[rlang]{quasiquotation}}, i.e. they can be specified by
 #' their names, quoted or unquoted, or as column position.

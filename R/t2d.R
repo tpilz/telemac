@@ -1,5 +1,5 @@
 # internal constructor for a t2d project
-new_t2d <- function(title, wdir, exec, cas_in, geo_in, cli_in, res_in) {
+new_t2d <- function(title, wdir, exec, cas_in, geo_in, cli_in, res_in, opt_in) {
   stopifnot(is.character(title) && length(title) == 1)
   stopifnot(is.character(exec) && length(exec) == 1)
   stopifnot(is.character(wdir) && length(wdir) == 1)
@@ -12,6 +12,11 @@ new_t2d <- function(title, wdir, exec, cas_in, geo_in, cli_in, res_in) {
   else
     res_obj <- results(res_in)
 
+  if (is.null(opt_in))
+    opt_obj <- NULL
+  else
+    opt_obj <- opt_in
+
   structure(
     list(title = title,
          wdir = wdir,
@@ -19,7 +24,8 @@ new_t2d <- function(title, wdir, exec, cas_in, geo_in, cli_in, res_in) {
          cas = cas_obj,
          geo = geo_obj,
          cli = cli_obj,
-         res = res_obj),
+         res = res_obj,
+         opt = opt_obj),
     class = "t2d"
   )
 }
@@ -28,11 +34,13 @@ new_t2d <- function(title, wdir, exec, cas_in, geo_in, cli_in, res_in) {
 validate_t2d <- function(x) {
 
   stopifnot(inherits(x, "t2d"))
-  stopifnot(all(c("title", "wdir", "exec", "cas", "geo", "cli", "res") %in% names(x)))
+  stopifnot(all(c("title", "wdir", "exec", "cas", "geo", "cli", "res", "opt") %in% names(x)))
   stopifnot(inherits(x$cas, "t2d_cas"))
   stopifnot(inherits(x$geo, "t2d_geo"))
   stopifnot(inherits(x$cli, "t2d_cli"))
   stopifnot(inherits(x$res, "t2d_res"))
+  if (!is.null(x$opt))
+    stopifnot(inherits(x$opt, "t2d_opt"))
 
   tryCatch({
     exec_test <- suppressWarnings(system2(x$exec, "--help", stdout = T, stderr = T))
@@ -89,10 +97,10 @@ validate_t2d <- function(x) {
 #'
 #' @export
 t2d <- function(title = "", wdir = ".", exec = "telemac2d.py",
-                cas = NULL, geo = NULL, cli = NULL, res = NULL) {
+                cas = NULL, geo = NULL, cli = NULL, res = NULL, opt = NULL) {
   if (any(is.null(c(cas, geo, cli))))
     stop("Arguments 'cas', 'geo', and 'cli' are required!", call. = F)
-  validate_t2d(new_t2d(title, wdir, exec, cas, geo, cli, res))
+  validate_t2d(new_t2d(title, wdir, exec, cas, geo, cli, res, opt))
 }
 
 #' @name t2d
@@ -108,6 +116,10 @@ print.t2d <- function(x, ...) {
   cat("Steering parameters:    A t2d_cas object pointing to", attr(x$cas, "file"), "\n")
   cat("Geometry / mesh:        A t2d_geo object pointing to", attr(x$geo, "file"), "\n")
   cat("Boundary conditions:    A t2d_cli object pointing to", attr(x$cli, "file"), "\n")
+  if (is.null(x$opt))
+    cat("Optional input:         None given\n")
+  else
+    cat("Optional input:         ", paste(x$opt$file, collapse = ", "), "\n", sep = "")
   cat("Simulation results:     A t2d_res object pointing to", attr(x$res, "file"))
   if (!file.exists(paste(x$wdir, attr(x$res, "file"), sep = "/")))
     cat(" (file does not yet exist)\n")
@@ -157,6 +169,8 @@ write_t2d <- function(x) {
   check_file(f_cli, "cli", check_rel = T)
   check_file(f_geo, "slf", check_rel = T)
   check_file(f_res, "slf", check_rel = T)
+  if (!is.null(x$opt))
+    waste <- lapply(x$opt$file, check_file, ext = "txt", check_rel = T)
 
   if (fs::is_absolute_path(x$wdir))
     wdir_abs <- x$wdir
@@ -175,10 +189,14 @@ write_t2d <- function(x) {
     attr(x$cli, "file") <- file.path(wdir_abs, f_cli)
   if (!fs::is_absolute_path(f_geo))
     attr(x$geo, "file") <- file.path(wdir_abs, f_geo)
+  if (!is.null(x$opt) && any(!fs::is_absolute_path(x$opt$file)))
+    x$opt$file <- file.path(wdir_abs, x$opt$file)
 
   write_cas(x)
   write_geo(x)
   write_cli(x)
+  if (!is.null(x$opt))
+    write_opt(x)
 }
 
 

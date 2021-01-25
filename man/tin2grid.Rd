@@ -56,7 +56,7 @@ an object of class \code{t2d_geo} or \code{t2d_res}.}
 \item{col_z}{If \code{x} is a \code{data.frame}: column with the mesh values.}
 
 \item{tinmat}{\code{integer} matrix of point indices (referring to x and y coordinates)
-defining the mesh elements.}
+defining the mesh elements (such as element \code{triangles} of a \code{t2d_tin} object).}
 
 \item{v}{\code{character}, name of the variable(s) that is/are to be extracted and
 interpolated (default all variables that can be found).

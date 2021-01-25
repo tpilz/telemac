@@ -12,7 +12,8 @@ t2d(
   cas = NULL,
   geo = NULL,
   cli = NULL,
-  res = NULL
+  res = NULL,
+  opt = NULL
 )
 
 \method{print}{t2d}(x, ...)
