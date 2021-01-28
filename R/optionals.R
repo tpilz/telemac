@@ -30,13 +30,14 @@ validate_optlines <- function(x) {
   x
 }
 
+#' @importFrom utils str
 #' @export
-str.t2d_opt_LINES <- function(x, ...) {
-  n <- length(x)
-  cat(paste0(class(x)[1], " of length ", n))
+str.t2d_opt_LINES <- function(object, ...) {
+  n <- length(object)
+  cat(paste0(class(object)[1], " of length ", n))
   if (n > 0) {
     cat("; first list element: ")
-    str(x[[1]], ...)
+    str(object[[1]], ...)
   }
 }
 
@@ -63,6 +64,7 @@ c.t2d_opt_LINES <- function(...) {
 #'   for multiple optional files;
 #'   an object of type \code{t2d_opt} to add further optional file(s).
 #' @param fname \code{character}, file name(s).
+#' @param ... Arguments passed to or from other methods.
 #' @return An object of type \code{t2d_opt} consisting of a \code{data.frame} with
 #'   elements \code{file}, file name(s) of the optional input file(s), and \code{value},
 #'   an object of type \code{t2d_opt_LINES} that is essentially a \code{list} of
@@ -77,11 +79,11 @@ c.t2d_opt_LINES <- function(...) {
 #' \code{SECTIONS INPUT FILE} or \code{FORMATTED DATA FILE}) but no binary files.
 #' @example inst/examples/opt.R
 #' @export
-optionals <- function(x, fname) UseMethod("optionals")
+optionals <- function(x, fname, ...) UseMethod("optionals")
 
 #' @name optionals
 #' @export
-optionals.character <- function(x, fname) {
+optionals.character <- function(x, fname, ...) {
   if (missing(fname)) stop("Argument 'fname' is required!", call. = F)
   optlines <- validate_optlines(new_optlines(x))
   validate_opt(new_opt(optlines, fname))
@@ -89,7 +91,7 @@ optionals.character <- function(x, fname) {
 
 #' @name optionals
 #' @export
-optionals.list <- function(x, fname) {
+optionals.list <- function(x, fname, ...) {
   if (missing(fname)) stop("Argument 'fname' is required!", call. = F)
   if (length(x) != length(fname))
     stop("Arguments 'x' and 'fname' must be of equal lengths!", call. = F)
@@ -102,15 +104,17 @@ optionals.list <- function(x, fname) {
 #' or a \code{list} with the values for the additional optional input file(s).
 #' @name optionals
 #' @export
-optionals.t2d_opt <- function(x, fname, vals) {
+optionals.t2d_opt <- function(x, fname, ..., vals) {
   x <- validate_opt(x)
 
-  out <- NULL
+  add <- NULL
   if (is.character(vals))
-    out <- optionals.character(vals, fname)
+    add <- optionals.character(vals, fname)
   else if (is.list(vals))
-    out <- optionals.list(vals, fname)
+    add <- optionals.list(vals, fname)
   else stop("Argument 'vals' must be a list or a character vector!", call. = F)
+
+  out <- rbind(x, add)
 
   validate_opt(out)
 }
@@ -137,7 +141,7 @@ print.t2d_opt <- function(x, ..., n = 10) {
     j <- min(length(x$value[[i]]), k)
     cat(x$value[[i]][1:j], sep = "\n")
     if (length(x$value[[i]]) > j)
-      cat("[...]")
+      cat("[...]\n")
   }
   if (f < length(x$file))
     cat("[", length(x$file) - f, " file(s) omitted]", sep = "")
@@ -167,7 +171,7 @@ print.t2d_opt_LINES <- function(x, ..., n = 10) {
     j <- min(length(x[[i]]), k)
     cat(x[[i]][1:j], sep = "\n")
     if (length(x[[i]]) > j)
-      cat("[...]")
+      cat("[...]\n")
   }
   if (f < length(x))
     cat("[", length(x) - f, " file(s) omitted]", sep = "")

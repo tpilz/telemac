@@ -39,6 +39,8 @@ Default: \code{telemac2d.py}.}
 results file or left empty at the beginning in which case an empty template
 object will be generated.}
 
+\item{opt}{Object of class \code{t2d_opt} (if any; default: \code{NULL}).}
+
 \item{x}{An object of class \code{t2d}.}
 
 \item{...}{Optional arguments passed to \code{print} methods.}

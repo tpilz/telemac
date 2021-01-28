@@ -72,6 +72,7 @@ validate_t2d <- function(x) {
 #' @param res Passed to \code{\link{results}}. Can be the name of an existing
 #' results file or left empty at the beginning in which case an empty template
 #' object will be generated.
+#' @param opt Object of class \code{t2d_opt} (if any; default: \code{NULL}).
 #'
 #' @return An object of class \code{t2d}, that is a list with elements title, wdir,
 #' exec, cas, geo, cli, res TODO.

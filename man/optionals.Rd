@@ -9,13 +9,13 @@
 \alias{print.t2d_opt_LINES}
 \title{Optional input files}
 \usage{
-optionals(x, fname)
+optionals(x, fname, ...)
 
-\method{optionals}{character}(x, fname)
+\method{optionals}{character}(x, fname, ...)
 
-\method{optionals}{list}(x, fname)
+\method{optionals}{list}(x, fname, ...)
 
-\method{optionals}{t2d_opt}(x, fname, vals)
+\method{optionals}{t2d_opt}(x, fname, ..., vals)
 
 \method{print}{t2d_opt}(x, ..., n = 10)
 
@@ -30,6 +30,8 @@ for multiple optional files;
 an object of type \code{t2d_opt} to add further optional file(s).}
 
 \item{fname}{\code{character}, file name(s).}
+
+\item{...}{Arguments passed to or from other methods.}
 
 \item{vals}{If \code{x} is a \code{t2d_opt} object: a \code{character} vector
 or a \code{list} with the values for the additional optional input file(s).}
