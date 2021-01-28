@@ -5,7 +5,7 @@ Description: The packages provides an interface for the TELEMAC suite for modell
     of free surface flow. This includes methods for model initialisation, simulation,
     and visualisation. So far only the TELEMAC-2D module for 2-dimensional hydrodynamic
     modelling is implemented. 
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Author: Tobias Pilz
 Maintainer: Tobias Pilz <topilz@pik-potsdam.de>
 Authors@R: c(person(given="Tobias",
