@@ -48,7 +48,7 @@ validate_t2d <- function(x) {
   if (any(grepl("error", exec_test, ignore.case = T))) {
     warnlen <- options()$warning.length
     options(warning.length = 8170)
-    on.exit(options(warning.length = warnlen))
+    on.exit(options(warning.length = warnlen), add = TRUE)
     stop(paste0("Found executable but simple call '", x$exec, " --help' caused an error:\n"), paste(exec_test, collapse = "\n"), call. = F)
   }
 
@@ -270,7 +270,7 @@ simulate_t2d <- function(x, log = "run.log", res = NULL, vars = "all") {
   # run
   wd <- getwd()
   setwd(wdir_abs)
-  on.exit(setwd(wd))
+  on.exit(setwd(wd), add = TRUE)
   cat("Starting simulation. This may take a while depending on your setup ...\n")
   cmdout <- sys::exec_wait(x$exec, attr(x$cas, "file"),
                            std_out = log, std_in = log)

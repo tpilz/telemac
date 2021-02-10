@@ -4,7 +4,7 @@
 \alias{read_slf_variable}
 \title{Read slf variables}
 \usage{
-read_slf_variable(fname, seek_start, vars, nv, fsize, npoin)
+read_slf_variable(fname, seek_start, vars, nv, fsize, npoin, times = NULL)
 }
 \arguments{
 \item{fname}{\code{character}, name of a SELAFIN file.}
@@ -20,6 +20,9 @@ be read (can be inferred from header information, \code{\link{read_slf_header}})
 \item{fsize}{\code{integer}, precision of the values (number of bytes).}
 
 \item{npoin}{\code{integer}, number of mesh points.}
+
+\item{times}{\code{integer} vector, the timesteps to be read. If any specified
+timestep cannot be found in the file an error is raised. Default (\code{NULL}): all.}
 }
 \value{
 A \code{list} with the following elements:

@@ -18,7 +18,8 @@ new_res <- function(data = NULL, log = NULL, fname = "results.slf", lname = "<un
                     ndp = data$header$ndp,
                     varnames = data$header$varnames,
                     varunits = data$header$varunits,
-                    date = data$header$date),
+                    date = data$header$date,
+                    ntimes = data$header$ntimes),
       tin = data$tin,
       log = log,
       values = data$values)
@@ -61,7 +62,8 @@ validate_res <- function(x) {
 #'    an object of class \code{t2d_res} (modify attributes);
 #'    an object of class \code{t2d} (read data after model run).
 #' @param fname \code{character}, name for the associated results file (can also be used to replace an existing entry).
-#' @param ... Arguments passed to or from other methods.
+#' @param ... Arguments passed to or from other methods, e.g. to \code{\link{read_results}}
+#' such as arguments \code{vars}, \code{times}, or \code{return_datetime}.
 #' @return An object of class \code{t2d_res} consisting of an attribute \code{file}
 #' pointing to a specific results file, an attribute \code{log} pointing to the log
 #' of a simulation run, and a \code{list} with elements
@@ -87,14 +89,11 @@ results.default <- function(x = NULL, fname = "results.slf", ...) {
   validate_res(new_res(NULL, fname = fname))
 }
 
-#' @param vars Selection of variables to be read from the file: either \code{"all"}
-#' (default) reading all variables, \code{"none"} giving only the header, a character
-#' vector of variable names, or a numeric vector of positions.
 #' @param log File name of a log file from a simulation run, if it exists.
 #' @name results
 #' @export
-results.character <- function(x, fname = NULL, log = NULL, vars = "all", ...) {
-  data <- read_results(x, vars)
+results.character <- function(x, fname = NULL, log = NULL, ...) {
+  data <- read_results(x, ...)
   logdata <- NULL
   if (is.null(log)) {
     log <- "<unspecified>"
@@ -152,16 +151,25 @@ print.t2d_res <- function(x, ..., n = 10) {
     cat("The results comprise the following", length(x$header$varnames), "variables (units):\n")
     cat(paste0(x$header$varnames, " (", x$header$varunits, ")"), sep = ", ")
     cat("\n")
+    cat("over", x$header$ntimes, "timesteps.\n")
     if (is.null(x$values)) {
       cat("No results imported yet.")
     } else {
       times <- unique(x$values$timestep)
-      cat("over", length(times), "timesteps (", min(times), ", ...,", max(times), ").\n")
       vars <- unique(x$values$variable)
-      if (length(vars) == length(x$header$varnames)) {
-        cat("All variables imported as a tidy data.frame.\n")
+      if (length(vars) == length(x$header$varnames) && length(times) == x$header$ntimes) {
+        cat("All data imported as a tidy data.frame.\n")
       } else {
-        cat("Variables", paste(vars, collapse = ", "), "have been imported as a tidy data.frame.\n")
+        if (length(times) <= 2)
+          cat("Imported", length(times), "timesteps (",  paste(as.character(times), collapse = ", "), ") and ")
+        else if (!inherits(times, "POSIXct") && length(times) <= 10)
+          cat("Imported", length(times), "timesteps (", paste(times, collapse = ", "), ") and ")
+        else
+          cat("Imported", length(times), "timesteps (", as.character(min(times)), ", ...,", as.character(max(times)), ") and ")
+        if (length(vars) == 1)
+          cat("variable", vars, "as a tidy data.frame.\n")
+        else
+          cat("variables", paste(vars, collapse = ", "), "as a tidy data.frame.\n")
       }
       if (n > 0) {
         if (inherits(x$values, "tbl_df"))
@@ -190,13 +198,15 @@ print.t2d_res <- function(x, ..., n = 10) {
 #' @param vars Selection of variables to be read from the file: either \code{"all"}
 #' (default) reading all variables, \code{"none"} giving only the header, a character
 #' vector of variable names, or a numeric vector of positions.
+#' @param times \code{integer} vector, the timesteps to be read. Passed to \code{\link{read_slf_header}}.
+#' @param return_datetime \code{logical}, return timesteps as datetime (\code{\link{POSIXct}}) object?
 #' @return A \code{list} with \code{header} (see output of \code{\link{read_slf_header}})
 #' and \code{values}, which is a tidy \code{data.frame} where each line represents the value for a
 #' certain mesh point (with coordinates x and y) at a certain simulation timestep (note
 #' that this might be difficult to interpret if you used variable timestep lengths) for a
 #' specific variable.
 #' @export
-read_results <- function(fname, vars = "all") {
+read_results <- function(fname, vars = "all", times = NULL, return_datetime = FALSE) {
   stopifnot(file.exists(fname))
   check_file(fname, "slf")
 
@@ -214,7 +224,10 @@ read_results <- function(fname, vars = "all") {
   if (length(vars) == 1 && vars == "none") {
     out <- list(header = x_head, values = NULL)
   } else {
-    x_var <- read_slf_variable(fname, x_head$seek_head, vars, x_head$nbv1, x_head$precision, x_head$npoin)
+    x_var <- read_slf_variable(fname, x_head$seek_head, vars, x_head$nbv1, x_head$precision, x_head$npoin, times)
+
+    if (return_datetime)
+      x_var$time <- x_head$date + x_var$time
 
     # as data.frame
     vals_df <- data.frame(

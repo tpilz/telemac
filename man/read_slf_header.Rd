@@ -18,6 +18,7 @@ A \code{list} with the following elements:
   \item{varnames}{Names of variables}
   \item{varunits}{Units of variables}
   \item{date}{Starting date-time (\code{\link{POSIXct}} object)}
+  \item{ntimes}{Number of timesteps}
   \item{nelem}{Number of mesh elements (triangles)}
   \item{npoin}{Number of mesh points}
   \item{ndp}{Number of points per element (3 in case of triangles)}

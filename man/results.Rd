@@ -13,7 +13,7 @@ results(x, ...)
 
 \method{results}{default}(x = NULL, fname = "results.slf", ...)
 
-\method{results}{character}(x, fname = NULL, log = NULL, vars = "all", ...)
+\method{results}{character}(x, fname = NULL, log = NULL, ...)
 
 \method{results}{t2d_res}(x, fname = NULL, log = NULL, ...)
 
@@ -27,15 +27,12 @@ a \code{character} string providing the name of an existing results file;
 an object of class \code{t2d_res} (modify attributes);
 an object of class \code{t2d} (read data after model run).}
 
-\item{...}{Arguments passed to or from other methods.}
+\item{...}{Arguments passed to or from other methods, e.g. to \code{\link{read_results}}
+such as arguments \code{vars}, \code{times}, or \code{return_datetime}.}
 
 \item{fname}{\code{character}, name for the associated results file (can also be used to replace an existing entry).}
 
 \item{log}{File name of a log file from a simulation run, if it exists.}
-
-\item{vars}{Selection of variables to be read from the file: either \code{"all"}
-(default) reading all variables, \code{"none"} giving only the header, a character
-vector of variable names, or a numeric vector of positions.}
 
 \item{n}{Maximum number of steering parameters to print.}
 }

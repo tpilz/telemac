@@ -40,8 +40,6 @@ validate_tin <- function(x) {
     stop("There are 'points' not occurring in 'triangles' and / or 'edges'!", call. = F)
 
   # check boundary points (first points, continuous, anticlockwise)
-  bnd_fail <- paste0("The boundary points do not fullfill the requirements for TELEMAC: ",
-                     "outer boundary has to come first and point sequence has to be continuous!")
   if (!all(x$boundaries %in% seq(1, length(x$boundaries))) ||
       length(unique(x$boundaries)) != length(x$boundaries))
     stop(paste0("Boundary points do not comply with requirements: ",

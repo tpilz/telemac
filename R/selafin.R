@@ -12,6 +12,7 @@
 #'   \item{varnames}{Names of variables}
 #'   \item{varunits}{Units of variables}
 #'   \item{date}{Starting date-time (\code{\link{POSIXct}} object)}
+#'   \item{ntimes}{Number of timesteps}
 #'   \item{nelem}{Number of mesh elements (triangles)}
 #'   \item{npoin}{Number of mesh points}
 #'   \item{ndp}{Number of points per element (3 in case of triangles)}
@@ -29,7 +30,7 @@ read_slf_header <- function(fname) {
 
   # open file connection
   con <- file(fname, "rb")
-  on.exit(close(con))
+  on.exit(close(con), add = TRUE)
 
   # Title / variables
   waste <- readBin(con, integer(), 1, size = 4, endian = "big")
@@ -103,12 +104,20 @@ read_slf_header <- function(fname) {
   yvals <- readBin(con, double(), npoin, size = fsize, endian = "big")
   waste <- readBin(con, integer(), 1, size = 4, endian = "big")
 
+  # number of timesteps
+  nbts <- 4 + fsize + 4 + (npoin * fsize + 8) * nbv1
+  seek_head <- seek(con)
+  seek(con, 0, origin = "end")
+  seek_end <- seek(con)
+  ntimes <- (seek_end - seek_head) / nbts
+
   return(list(title = title,
               precision = fsize,
               nbv1 = nbv1,
               varnames = varnames,
               varunits = varunits,
               date = date,
+              ntimes = ntimes,
               nelem = nelem,
               npoin = npoin,
               ndp = ndp,
@@ -116,7 +125,7 @@ read_slf_header <- function(fname) {
               ipobo = ipobo,
               x = xvals,
               y = yvals,
-              seek_head = seek(con)))
+              seek_head = seek_head))
 }
 
 
@@ -132,6 +141,8 @@ read_slf_header <- function(fname) {
 #' @param nv \code{integer} giving the total number of variables in the file.
 #' @param fsize \code{integer}, precision of the values (number of bytes).
 #' @param npoin \code{integer}, number of mesh points.
+#' @param times \code{integer} vector, the timesteps to be read. If any specified
+#' timestep cannot be found in the file an error is raised. Default (\code{NULL}): all.
 #'
 #' @return A \code{list} with the following elements:
 #' \describe{
@@ -139,7 +150,7 @@ read_slf_header <- function(fname) {
 #'   \item{values}{An array of dimensions \code{(npoin x nv x length(time))} with the values of the variables for each meshpoint and timestep}
 #' }
 #' @export
-read_slf_variable <- function(fname, seek_start, vars, nv, fsize, npoin) {
+read_slf_variable <- function(fname, seek_start, vars, nv, fsize, npoin, times = NULL) {
   stopifnot(is.character(fname) && length(fname) == 1)
   check_file(fname, "slf")
   stopifnot(file.exists(fname))
@@ -149,19 +160,30 @@ read_slf_variable <- function(fname, seek_start, vars, nv, fsize, npoin) {
 
   # open file connection
   con <- file(fname, "rb")
-  on.exit(close(con))
+  on.exit(close(con), add = TRUE)
   seek(con, seek_start)
 
   # initialisations
   timestep <- NULL
   values_t <- matrix(NA_real_, nrow = npoin, ncol = nvars)
   values <- array(values_t, dim = c(dim(values_t), 1))
-  waste <- readBin(con, integer(), 1, size = 4, endian = "big")
+
+  # number of bytes per time step
+  nbts <- 4 + (npoin * fsize + 8) * nv
 
   # as long as new values can be found
   while (TRUE) {
+    # check if there is more data
+    waste <- readBin(con, integer(), 1, size = 4, endian = "big")
+    if (length(waste) == 0) break
+
     # timestep
-    timestep <- c(timestep, readBin(con, double(), 1, size = fsize, endian = "big"))
+    time_t <- readBin(con, double(), 1, size = fsize, endian = "big")
+    if (!is.null(times) && !(time_t %in% times)) {
+      seek(con, nbts, origin = "current")
+      next
+    }
+    timestep <- c(timestep, time_t)
     waste <- readBin(con, integer(), 1, size = 4, endian = "big")
 
     # values of variables
@@ -176,11 +198,9 @@ read_slf_variable <- function(fname, seek_start, vars, nv, fsize, npoin) {
 
     # append to array
     values <- array(c(values, values_t), dim = c(dim(values)[1:2], dim(values)[3] + 1))
-
-    # check if there is more data
-    waste <- readBin(con, integer(), 1, size = 4, endian = "big")
-    if (length(waste) == 0) break
   }
+  if (!is.null(times) && !all(times %in% timestep))
+    stop("There are specified timesteps that cannot be found in the dataset!", call. = F)
 
   return(list(time = timestep,
               values = values[,,-1, drop = F]))
@@ -210,7 +230,7 @@ write_slf_header <- function(fname, header) {
   # open file connection
   fs::dir_create(dirname(fname))
   con <- file(fname, "wb")
-  on.exit(close(con))
+  on.exit(close(con), add = TRUE)
 
   # Title / variables
   prec_char <- dplyr::case_when(
@@ -295,7 +315,7 @@ write_slf_variable <- function(fname, data) {
 
   # open file connection
   con <- file(fname, "ab")
-  on.exit(close(con))
+  on.exit(close(con), add = TRUE)
 
   for (j in seq_along(data$time)) {
     # timestep
