@@ -1,7 +1,7 @@
 ---
 title: "R interface for TELEMAC-2D"
 author: "Tobias Pilz"
-date: "December 2020"
+date: "February 2021"
 output:
   html_document:
     toc: true
@@ -43,7 +43,7 @@ For a basic TELEMAC-2D setup three input files are required: a geometry file (`*
 
 The geometry of a TELEMAC setup is stored in a binary file of type SELAFIN (also referred to as SERAFIN). The mesh is typically stored as a triangulated irregular network (TIN). There are several possible approaches to obtain such a mesh, which shall not be discussed here in greater detail. In this demonstration we will start with a typical DEM represented by a regular grid and convert it into a TIN by constrained Delaunay triangulation using the well-known [Triangle algorithm](http://www.cs.cmu.edu/~quake/triangle.html).
 
-First we read an example DEM. This shows an urban area in the northwestern region of the city of Lagos, Nigeria, and is derived from the (after registration) freely avilable [MERIT Hydro DEM](http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro/). Despite its coarse resolution of about 90 x 90 m the DEM is hydrologically conditioned and is known for a relatively good performance in hydrodynamic modelling in comparison to other freely available DEM products.
+First we read an example DEM. This shows an urban area in the northwestern region of the city of Lagos, Nigeria, and is derived from the (after registration) freely avilable [MERIT Hydro DEM](http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro/). Despite its coarse resolution of about 90 x 90 m the DEM is hydrologically conditioned and is known for a relatively good performance in hydrodynamic modelling in comparison to other freely available DEM products. However, in real-world applications, high resolution LiDAR-based DEMs are certainly required to obtain optimal model results.
 
 ```{r read_dem, message = FALSE, fig.width = 6, fig.height = 6}
 dem_rast <- raster(system.file("dem/dem_merit_lagos.tif", package = "telemac"))
@@ -137,7 +137,7 @@ Internally a `t2d_cas` object is a `list` and individual element may be accessed
 
 ```{r cas_object_mod}
 str(cas_obj)
-cas_obj[["VARIABLES FOR GRAPHIC PRINTOUTS"]] <- "H,M"
+cas_obj[["VARIABLES FOR GRAPHIC PRINTOUTS"]] <- "H"
 ```
 
 
@@ -153,14 +153,14 @@ t2d_obj
 
 Note that we have not yet written any files. As a last step to prepare a TELEMAC-2D run we need to write the model's input files. All prepared input data will be written into their associated files relative to `wdir` given in `t2d_obj`.
 
-```{r pre_project}
+```{r pre_project, eval = FALSE}
 write_t2d(t2d_obj)
 ```
 
 
 # Model simulation
 
-The model can be run either directly or via R interface `simulate_t2d()`. However, TELEMAC-2D runs, depending on domain size, spatial and temporal resolution, and numerical settings, can take quite a while. Using the R interface to conduct simulations makes only sense if you are sure the model run will not take too long.
+The model can be run either directly or via R interface `simulate_t2d()`. However, TELEMAC-2D runs, depending on domain size, spatial and temporal resolution, and numerical settings, can take quite a while. Using the R interface to conduct simulations makes only sense if you are sure the model run will not take too long, e.g. for test runs of minimal examples.
 
 The `simulate_t2d()` function accepts a selection of output variables to be imported into R via argument `vars`. Depending on the number of mesh points, output intervals, and variables specified in the steering file the required storage capacity in R can be high. Therefore it makes sense to only import variables for immediate analyses.
 
@@ -169,12 +169,12 @@ t2d_obj <- simulate_t2d(t2d_obj, log = "test_run.log", res = "test_results.slf",
                         vars = "water depth")
 ```
 
-Note that the results of a previous simulation run can be imported as well.
+Note that the results of a previous simulation run can be imported as well. Besides, we import only some selected timesteps for illustration.
 
 ```{r import_results}
 t2d_obj$res <- results(system.file("telemac/basics/results.slf", package = "telemac"),
                        log = system.file("telemac/basics/test_run.log", package = "telemac"),
-                       vars = "water depth")
+                       vars = "water depth", times = 3600 * c(0,1,4,12,24))
 ```
 
 The simulation results are represented as a `t2d_res` object with header information, the underlying mesh as `t2d_tin` object, a log of TELEMAC's runtime messages, and the actual data as a tidy `data.frame`. For a first investigation it is always good to have a look at the log file. The runtme log is stored in the `t2d_res` object and is accessible via `t2d_obj$res$log` (not shown here). Otherwise there is a print method to show some general information.
@@ -184,7 +184,7 @@ t2d_obj$res
 str(t2d_obj$res)
 ```
 
-There is also a function `write_results()` to write data into a SELAFIN file. This can be used, for instance, to reduce the amount of data or write restrospectively corrected data. Note that in this example we have only one out of originally two variables imported that will now be written into a SELAFIN file.
+There is also a function `write_results()` to write data into a SELAFIN file. This can be used, for instance, to reduce the amount of data or write restrospectively corrected data. Note that in this example we have only imported a few selected timesteps that will now be written into a SELAFIN file.
 
 ```{r results_export, eval = FALSE}
 # change associated file (otherwise the original file would be overwritten) 

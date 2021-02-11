@@ -167,7 +167,7 @@ print.t2d_res <- function(x, ..., n = 10) {
         else
           cat("Imported", length(times), "timesteps (", as.character(min(times)), ", ...,", as.character(max(times)), ") and ")
         if (length(vars) == 1)
-          cat("variable", vars, "as a tidy data.frame.\n")
+          cat("variable", as.character(vars), "as a tidy data.frame.\n")
         else
           cat("variables", paste(vars, collapse = ", "), "as a tidy data.frame.\n")
       }
@@ -273,6 +273,7 @@ write_results.t2d_res <- function(x) {
                   varnames = vars,
                   varunits = stringr::str_to_upper(x$header$varunits[iv]),
                   date = x$header$date,
+                  ntimes = x$header$ntimes,
                   nelem = x$header$nelem,
                   npoin = x$header$npoin,
                   ndp = x$header$ndp,
@@ -282,7 +283,7 @@ write_results.t2d_res <- function(x) {
                   y = x$tin$points[,2])
 
   # prepare data (bring into correct order as defined by mesh in x_head)
-  x_df <- arrange_meshdata(x_head$x, x_head$y, vars, x$values)
+  x_df <- arrange_meshdata(x_head$x, x_head$y, stringr::str_to_lower(vars), x$values)
   times <- unique(x_df$timestep)
   x_var <- list(
     precision = x_head$precision,
@@ -295,6 +296,7 @@ write_results.t2d_res <- function(x) {
   write_slf_variable(fname, x_var)
 
   # return updated t2d_res object
+  x_head$varnames <- x_head$varnames
   validate_res(new_res(data = list(header = x_head, tin = x$tin, values = as.data.frame(x_df)),
                        log = x$log, fname = fname, lname = attr(x, "log")))
 }

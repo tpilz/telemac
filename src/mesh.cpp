@@ -298,8 +298,8 @@ NumericMatrix interpol_grd(NumericVector x, NumericVector y, NumericVector z, In
     // element bounding box as grid indices
     gxsw = 0;
     gysw = 0;
-    gxne = nx-1;
-    gyne = ny-1;
+    gxne = nx;
+    gyne = ny;
     for (int j=0; j<nx; j++){
       if(xgrd[j] < xsw) gxsw = j;
       if(xgrd[nx-j-1] > xne) gxne = nx-j-1;

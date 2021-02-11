@@ -37,7 +37,6 @@ Imports:
     tidyselect
 Suggests: 
     knitr,
-    plotly,
     rgdal,
     rmarkdown,
     stars,

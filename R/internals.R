@@ -14,7 +14,7 @@ check_file <- function(f, ext, check_rel = FALSE) {
 arrange_meshdata <- function(x, y, vars, values) {
   data.frame(x = x, y = y) %>%
     dplyr::left_join(values, by = c("x", "y")) %>% # ensure correct order of x and y
-    dplyr::mutate(variable = factor(stringr::str_to_upper(.data$variable), levels = vars)) %>% # order of variable
+    dplyr::mutate(variable = factor(.data$variable, levels = vars)) %>% # order of variable
     dplyr::arrange(.data$timestep, .data$variable) # correct order of timestep and variable
 }
 

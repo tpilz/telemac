@@ -134,9 +134,11 @@ tin2grid.t2d_res <- function(x, s, output = c("data.frame", "list", "raster"), .
 
   output <- match.arg(output)
 
+  x$values$variable <- stringr::str_to_lower(x$values$variable)
   vars <- unique(x$values$variable)
   if (is.numeric(v)) v <- vars[v]
   if (is.null(v)) v <- vars
+  v <- stringr::str_to_lower(v)
 
   if (!all(v %in% vars))
     stop("There are variables requested that are not available in the data!", call. = F)
@@ -165,7 +167,7 @@ tin2grid.t2d_res <- function(x, s, output = c("data.frame", "list", "raster"), .
       tidyr::unnest(.data$interpol)
   } else if (output %in% c("raster", "list")) {
     dat_sel <- x$values %>%
-      dplyr::filter(stringr::str_to_lower(.data$variable) == stringr::str_to_lower(v) & .data$timestep == t)
+      dplyr::filter(.data$variable == v & .data$timestep == t)
     dat_sel <- arrange_meshdata(x$tin$points[,1], x$tin$points[,2], v, dat_sel)
     out <- tin2grid.data.frame(data.frame(x = dat_sel$x, y = dat_sel$y, z = dat_sel$value),
                                tinmat = x$tin$triangles, s = s, output = output)

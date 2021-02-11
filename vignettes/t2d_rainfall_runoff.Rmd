@@ -1,7 +1,7 @@
 ---
 title: "Rainfall--runoff modelling with TELEMAC-2D"
 author: "Tobias Pilz"
-date: "December 2020"
+date: "February 2021"
 output:
   html_document:
     toc: true
@@ -27,7 +27,6 @@ This vignette outlines how to conduct rainfall--runoff simulations with TELEMAC-
 Make sure the following packages are installed and load them. In addition, we define the path to a directory where the TELEMAC-2D runs shall be conducted (default is a temporary directory).
 
 ```{r libraries, message = FALSE}
-library(plotly)
 library(tidyverse)
 library(sf)
 library(telemac)
@@ -151,18 +150,15 @@ t2d_sim <- simulate_t2d(t2d_obj)
 
 ```{r add_result_rainfall, echo = FALSE}
 t2d_sim <- t2d_obj
-t2d_sim$res <- results(system.file("telemac/rainfall_runoff/res_rainfall.slf", package = "telemac"))
+t2d_sim$res <- results(system.file("telemac/rainfall_runoff/res_rainfall.slf", package = "telemac"),
+                       times = 7*3600)
 ```
 
 When plotting the water depth we see that at the end of the simulation period the area is covered by water at a depth of 25 mm.
 
-*Note: In this case a plotly plot with slider, as will be used for the other examples, does not work due to a bug in plotly that is not yet resolved, see [plotly issues](https://github.com/ropensci/plotly/issues/907).*
-
 ```{r plot_rainfall}
-res_grid <- tin2grid(t2d_sim$res, s = 2, v = "water depth", t = 7*3600, output = "list")
-res_df <- expand_grid(x = res_grid$x, y = res_grid$y) %>%
-    mutate(z = c(res_grid$z))
-ggplot(res_df, aes(x = x, y = y, fill = z)) +
+res_df <- tin2grid(t2d_sim$res, s = 2, output = "data.frame")
+ggplot(res_df, aes(x = x, y = y, fill = value)) +
   geom_raster() +
   coord_equal() +
   scale_y_continuous(expand = expansion(0,0)) +
@@ -231,28 +227,21 @@ t2d_sim <- simulate_t2d(t2d_obj)
 
 ```{r add_result_rainfall_runoff, echo = FALSE}
 t2d_sim <- t2d_obj
-t2d_sim$res <- results(system.file("telemac/rainfall_runoff/res_rainfall_runoff.slf", package = "telemac"))
+t2d_sim$res <- results(system.file("telemac/rainfall_runoff/res_rainfall_runoff.slf", package = "telemac"),
+                       times = 3600 * c(0,1,4,7))
 ```
 
-For visualisation I recommend using [plotly](https://plotly.com/r) to easily slide through the simulation timesteps. We will plot the user-defined variable `acc. runoff`, i.e. total accumulated runoff at each timestep. It can be seen how accumulated runoff depends on the CN values. All in all, the values are as reported by [Ligier (2016)](https://henry.baw.de/handle/20.500.11970/104541).
+We will plot the user-defined variable `acc. runoff`, i.e. total accumulated runoff at each timestep. It can be seen how accumulated runoff depends on the CN values. All in all, the values are as reported by [Ligier (2016)](https://henry.baw.de/handle/20.500.11970/104541).
 
-```{r plot_rainfall_runoff}
-# import results for all 8 timesteps (0 to 7 * 3600 seconds)
-res_df <- map_dfr(0:7, function(ti) {
-  # interpolate results from mesh to regular grid
-  res_grid <- tin2grid(t2d_sim$res, s = 2, v = "acc. runoff", t = ti*3600, output = "list")
-  # convert list to data.frame for plotting with ggplot
-  expand_grid(x = res_grid$x, y = res_grid$y) %>%
-    mutate(z = c(res_grid$z), time = ti)})
-# prepare plot with ggplot ('frame' define the slider in plotly)
-gg <- ggplot(res_df, aes(x = x, y = y, fill = z, frame = time)) +
+```{r plot_rainfall_runoff, fig.width = 12, fig.height = 10}
+res_df <- tin2grid(t2d_sim$res, s = 2, output = "data.frame")
+ggplot(res_df, aes(x = x, y = y, fill = value)) +
   geom_raster() +
   coord_equal() +
   scale_y_continuous(expand = expansion(0,0)) +
   scale_x_continuous(expand = expansion(0,0)) +
+  facet_wrap(~ timestep) +
   theme_bw()
-# convert to plotly with slider
-ggplotly(gg)
 ```
 
 
@@ -297,24 +286,17 @@ t2d_sim <- simulate_t2d(t2d_obj)
 
 ```{r add_result_rainfall_runoff_dyn, echo = FALSE}
 t2d_sim <- t2d_obj
-t2d_sim$res <- results(system.file("telemac/rainfall_runoff/res_rainfall_runoff_dyn.slf", package = "telemac"))
+t2d_sim$res <- results(system.file("telemac/rainfall_runoff/res_rainfall_runoff_dyn.slf", package = "telemac"),
+                       times = 3600 * c(0,1,4,7))
 ```
 
-```{r plot_rainfall_runoff_dyn}
-# import results for all 8 timesteps (0 to 7 * 3600 seconds)
-res_df <- map_dfr(0:7, function(ti) {
-  # interpolate results from mesh to regular grid
-  res_grid <- tin2grid(t2d_sim$res, s = 2, v = "acc. runoff", t = ti*3600, output = "list")
-  # convert list to data.frame for plotting with ggplot
-  expand_grid(x = res_grid$x, y = res_grid$y) %>%
-    mutate(z = c(res_grid$z), time = ti)})
-# prepare plot with ggplot ('frame' define the slider in plotly)
-gg <- ggplot(res_df, aes(x = x, y = y, fill = z, frame = time)) +
+```{r plot_rainfall_runoff_dyn, fig.width = 12, fig.height = 10}
+res_df <- tin2grid(t2d_sim$res, s = 2, output = "data.frame")
+ggplot(res_df, aes(x = x, y = y, fill = value)) +
   geom_raster() +
   coord_equal() +
   scale_y_continuous(expand = expansion(0,0)) +
   scale_x_continuous(expand = expansion(0,0)) +
+  facet_wrap(~ timestep) +
   theme_bw()
-# convert to plotly with slider
-ggplotly(gg)
 ```
