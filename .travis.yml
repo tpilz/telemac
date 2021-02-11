@@ -2,3 +2,33 @@
 
 language: R
 cache: packages
+sudo: required
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:ubuntugis/ppa'
+    packages:
+      - libudunits2-dev
+      - libproj-dev
+      - libgeos-dev
+      - libgdal-dev
+
+r_binary_packages:
+    - dplyr
+    - fs
+    - lubridate
+    - magrittr
+    - purrr
+    - raster
+    - rcpp
+    - rlang
+    - sp
+    - stringr
+    - sys
+    - tidyr
+    - tidyselect
+    - rgdal
+    - knitr
+    - rmarkdown
+    - tidyverse
