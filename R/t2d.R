@@ -1,7 +1,7 @@
 # internal constructor for a t2d project
 new_t2d <- function(title, wdir, exec, cas_in, geo_in, cli_in, res_in, opt_in) {
   stopifnot(is.character(title) && length(title) == 1)
-  stopifnot(is.character(exec) && length(exec) == 1)
+  stopifnot(is.null(exec) || (is.character(exec) && length(exec) == 1))
   stopifnot(is.character(wdir) && length(wdir) == 1)
 
   cas_obj <- cas(cas_in)
@@ -42,14 +42,16 @@ validate_t2d <- function(x) {
   if (!is.null(x$opt))
     stopifnot(inherits(x$opt, "t2d_opt"))
 
-  tryCatch({
-    exec_test <- suppressWarnings(system2(x$exec, "--help", stdout = T, stderr = T))
-  }, error = function(e) stop("Executable '", x$exec, "' could not be found on the system!", call. = F))
-  if (any(grepl("error", exec_test, ignore.case = T))) {
-    warnlen <- options()$warning.length
-    options(warning.length = 8170)
-    on.exit(options(warning.length = warnlen), add = TRUE)
-    stop(paste0("Found executable but simple call '", x$exec, " --help' caused an error:\n"), paste(exec_test, collapse = "\n"), call. = F)
+  if (!is.null(x$exec)) {
+    tryCatch({
+      exec_test <- suppressWarnings(system2(x$exec, "--help", stdout = T, stderr = T))
+    }, error = function(e) stop("Executable '", x$exec, "' could not be found on the system!", call. = F))
+    if (any(grepl("error", exec_test, ignore.case = T))) {
+      warnlen <- options()$warning.length
+      options(warning.length = 8170)
+      on.exit(options(warning.length = warnlen), add = TRUE)
+      stop(paste0("Found executable but simple call '", x$exec, " --help' caused an error:\n"), paste(exec_test, collapse = "\n"), call. = F)
+    }
   }
 
   x
@@ -65,7 +67,7 @@ validate_t2d <- function(x) {
 #' will be written to. TELEMAC-2D's input filenames must be relative to this directory!
 #' Default: current working directoy.
 #' @param exec \code{character} string specifying the TELEMAC-2D executable (system command).
-#' Default: \code{telemac2d.py}.
+#' Default: \code{NULL} (\code{\link{simulate_t2d}} won't work).
 #' @param cas Passed to \code{\link{cas}} (preferably a \code{t2d_cas}) object).
 #' @param geo Passed to \code{\link{geo}} (preferably a \code{t2d_geo}) object).
 #' @param cli Passed to \code{\link{cli}} (preferably a \code{t2d_cli}) object).
@@ -97,9 +99,9 @@ validate_t2d <- function(x) {
 #' t2d_obj
 #'
 #' @export
-t2d <- function(title = "", wdir = ".", exec = "telemac2d.py",
-                cas = NULL, geo = NULL, cli = NULL, res = NULL, opt = NULL) {
-  if (any(is.null(c(cas, geo, cli))))
+t2d <- function(title = "", wdir = ".",
+                cas, geo, cli, res = NULL, opt = NULL, exec = NULL) {
+  if (any(c(missing(cas), missing(geo), missing(cli))))
     stop("Arguments 'cas', 'geo', and 'cli' are required!", call. = F)
   validate_t2d(new_t2d(title, wdir, exec, cas, geo, cli, res, opt))
 }
@@ -218,6 +220,8 @@ write_t2d <- function(x) {
 #' vector of variable names, or a numeric vector of positions. Importing all variables
 #' may require large storage capacities (depending on the number of variables, mesh points,
 #' and specified output intervals).
+#' @param exec \code{character}, the TELEMAC-2D executable if not already specified in
+#' \code{x}.
 #' @return An object of class \code{t2d} with new or updated element \code{res}
 #' (an object of class \code{t2d_res}).
 #' @note
@@ -230,7 +234,15 @@ write_t2d <- function(x) {
 #' In case of large projects with expected long model runtimes it might make
 #' more sense to run TELEMAC-2D directly istead of using this function.
 #' @export
-simulate_t2d <- function(x, log = "run.log", res = NULL, vars = "all") {
+simulate_t2d <- function(x, log = "run.log", res = NULL, vars = "all", exec) {
+
+
+  if (is.null(x$exec))
+    if (missing(exec))
+      stop("Argument 'exec' required as no executable could be found in 'x'!", call. = F)
+    else
+      x$exec <- exec
+
   x <- validate_t2d(x)
 
   if (fs::is_absolute_path(x$wdir))

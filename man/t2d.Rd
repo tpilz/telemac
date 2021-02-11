@@ -5,16 +5,7 @@
 \alias{print.t2d}
 \title{Initialise a TELEMAC-2D project}
 \usage{
-t2d(
-  title = "",
-  wdir = ".",
-  exec = "telemac2d.py",
-  cas = NULL,
-  geo = NULL,
-  cli = NULL,
-  res = NULL,
-  opt = NULL
-)
+t2d(title = "", wdir = ".", cas, geo, cli, res = NULL, opt = NULL, exec = NULL)
 
 \method{print}{t2d}(x, ...)
 }
@@ -25,9 +16,6 @@ t2d(
 \item{wdir}{\code{character} string, the project directory were inputs and outputs
 will be written to. TELEMAC-2D's input filenames must be relative to this directory!
 Default: current working directoy.}
-
-\item{exec}{\code{character} string specifying the TELEMAC-2D executable (system command).
-Default: \code{telemac2d.py}.}
 
 \item{cas}{Passed to \code{\link{cas}} (preferably a \code{t2d_cas}) object).}
 
@@ -40,6 +28,9 @@ results file or left empty at the beginning in which case an empty template
 object will be generated.}
 
 \item{opt}{Object of class \code{t2d_opt} (if any; default: \code{NULL}).}
+
+\item{exec}{\code{character} string specifying the TELEMAC-2D executable (system command).
+Default: \code{NULL} (\code{\link{simulate_t2d}} won't work).}
 
 \item{x}{An object of class \code{t2d}.}
 

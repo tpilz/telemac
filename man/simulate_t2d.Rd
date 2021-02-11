@@ -4,7 +4,7 @@
 \alias{simulate_t2d}
 \title{TELEMAC-2D model run}
 \usage{
-simulate_t2d(x, log = "run.log", res = NULL, vars = "all")
+simulate_t2d(x, log = "run.log", res = NULL, vars = "all", exec)
 }
 \arguments{
 \item{x}{An object of class \code{t2d}.}
@@ -23,6 +23,9 @@ checked for errors).}
 vector of variable names, or a numeric vector of positions. Importing all variables
 may require large storage capacities (depending on the number of variables, mesh points,
 and specified output intervals).}
+
+\item{exec}{\code{character}, the TELEMAC-2D executable if not already specified in
+\code{x}.}
 }
 \value{
 An object of class \code{t2d} with new or updated element \code{res}
