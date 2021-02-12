@@ -10,8 +10,8 @@ DataFrame cas_lineadapt(DataFrame df, int sep_len) {
   std::vector< std::string > value = df["value"];
   int n = df.nrows();
   IntegerVector len(n), len_key;
-  unsigned long int len_val_max = 0;
-  unsigned long int len_key_max = 0;
+  std::size_t len_val_max = 0;
+  std::size_t len_key_max = 0;
   int p;
   int h = 0;
   std::string si, sp, st;
@@ -38,7 +38,7 @@ DataFrame cas_lineadapt(DataFrame df, int sep_len) {
 
   // treatment of excessive lengths
   if (len_excess_i.size() > 0) {
-    for (int i = 0; i < len_excess_i.size(); ++i) {
+    for (std::size_t i = 0; i < len_excess_i.size(); ++i) {
       do {
         p = len_excess_i[i] + h + 1;
         st = value[p-1]; // value string to be split
