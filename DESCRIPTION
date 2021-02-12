@@ -1,13 +1,11 @@
 Package: telemac
 Type: Package
-Title: R interface for the TELEMAC suite
+Title: R Interface for the TELEMAC Model Suite
 Description: The packages provides an interface for the TELEMAC suite for modelling
     of free surface flow. This includes methods for model initialisation, simulation,
     and visualisation. So far only the TELEMAC-2D module for 2-dimensional hydrodynamic
     modelling is implemented. 
 Version: 0.0.0.9002
-Author: Tobias Pilz
-Maintainer: Tobias Pilz <topilz@pik-potsdam.de>
 Authors@R: c(person(given="Tobias",
                     family="Pilz",
                     email="topilz@pik-potsdam.de",
@@ -15,6 +13,8 @@ Authors@R: c(person(given="Tobias",
                     comment = c(ORCID = "0000-0002-5641-3918")),
              person(given="Potsdam Institute for Climate Impact Research (PIK)",
                     role=c("cph", "fnd")))
+URL: https://github.com/tpilz/telemac
+BugReports: https://github.com/tpilz/telemac/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

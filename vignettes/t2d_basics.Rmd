@@ -25,7 +25,7 @@ This document briefly demonstrates the basic functionalities of the `telemac` pa
 # Prerequisites
 Aside from `R` and the `telemac` package (and its package dependencies) the OpenTELEMAC software is needed. The model suite can be obtained and downloaded for free after registration from <http://www.opentelemac.org>. Install it and make sure it is running on your system.
 
-In addition we need some more R packages to run this demonstration, which include [tidyverse](https://www.tidyverse.org), [raster](https://cran.r-project.org/web/packages/raster/index.html), and [sf](https://r-spatial.github.io/sf/index.html). The packages can be installed directly from CRAN.
+In addition we need some more R packages to run this demonstration, which include [tidyverse](https://www.tidyverse.org), [raster](https://cran.r-project.org/package=raster), and [sf](https://r-spatial.github.io/sf/index.html). The packages can be installed directly from CRAN.
 
 ```{r libraries, message = FALSE}
 library(raster)
@@ -57,7 +57,7 @@ In addition we need the catchment boundary. Vector data in R are best handled us
 bnd <- st_read(system.file("dem/boundary_lagos.gpkg", package = "telemac"))
 ```
 
-The `telemac` package provides the function `tin()` to initialise a TIN the model mesh will be based on. Internally it uses the R package [RTriangle](https://cran.r-project.org/web/packages/RTriangle/index.html) to perform triangulation with the Triangle algorithm. In the example the catchment boundary is taken and triangulation performed starting with a resolution of 90 m (`s = 90`) of TIN points along the catchment boundary. Furthermore, the resulting triangles shall not be larger than 10,000 m^2 (`a = 100^2`) and the angles within the triangles not smaller than 30 degrees (`q = 30`).
+The `telemac` package provides the function `tin()` to initialise a TIN the model mesh will be based on. Internally it uses the R package [RTriangle](https://cran.r-project.org/package=RTriangle) to perform triangulation with the Triangle algorithm. In the example the catchment boundary is taken and triangulation performed starting with a resolution of 90 m (`s = 90`) of TIN points along the catchment boundary. Furthermore, the resulting triangles shall not be larger than 10,000 m^2 (`a = 100^2`) and the angles within the triangles not smaller than 30 degrees (`q = 30`).
 
 There is also the possibility to include breaklines to further refine the triangulation (see `?tin`). Holes are, however, not yet supported. Besides, there are no checks implemented to assure the success of triangulation and validity of the resulting TIN for model application (e.g. all breaklines must be within the boundary, breaklines should not intersect, etc.). A good summary about successful mesh generation for TELEMAC is presented in the documentation of the [pputils](https://github.com/pprodano/pputils) python tools.
 
@@ -80,7 +80,7 @@ plot(tin_obj, pch = ".")
 
 What is still missing to obtain a complete mesh for application within TELEMAC is elevation for each TIN point. This can be inferred by interpolation from the DEM.
 
-For this step the `telemac` package provides function `geo()`. The function accepts several input types, e.g. the name of an existing SELAFIN file from which the geometry is read. However, in this demonstration we want to generate a new geometry file based on our triangulated DEM. The interpolation will be conducted using an approach of inverse distance weighting (IDW) of nearest neighbours as implemented in function `idw()` of package [gstat](https://cran.r-project.org/web/packages/gstat/index.html).
+For this step the `telemac` package provides function `geo()`. The function accepts several input types, e.g. the name of an existing SELAFIN file from which the geometry is read. However, in this demonstration we want to generate a new geometry file based on our triangulated DEM. The interpolation will be conducted using an approach of inverse distance weighting (IDW) of nearest neighbours as implemented in function `idw()` of package [gstat](https://cran.r-project.org/package=gstat).
 
 In the example, IDW is conducted using the five (`n = 5`) nearest neighbours around each TIN point and a weighting power of 2 (`idp = 2`) of inverse distances.
 
