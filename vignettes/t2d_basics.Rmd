@@ -146,7 +146,7 @@ cas_obj[["VARIABLES FOR GRAPHIC PRINTOUTS"]] <- "H"
 Finally we can complete our TELEMAC-2D setup. To do so we create a `t2d` object using function `t2d()`. Adjust argument `wdir` (path to working, i.e. TELEMAC-2D project directory) according to your needs.
 
 ```{r t2d_obj}
-t2d_obj <- t2d(title = "Test setup", wdir = "t2d_test", exec = "telemac2d.py",
+t2d_obj <- t2d(title = "Test setup", wdir = "t2d_test",
                cas = cas_obj, geo = geo_obj, cli = cli_obj)
 t2d_obj
 ```
@@ -166,7 +166,7 @@ The `simulate_t2d()` function accepts a selection of output variables to be impo
 
 ```{r simulation, eval = FALSE}
 t2d_obj <- simulate_t2d(t2d_obj, log = "test_run.log", res = "test_results.slf",
-                        vars = "water depth")
+                        vars = "water depth", exec = "telemac2d.py")
 ```
 
 Note that the results of a previous simulation run can be imported as well. Besides, we import only some selected timesteps for illustration.

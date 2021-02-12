@@ -30,7 +30,7 @@ object will be generated.}
 \item{opt}{Object of class \code{t2d_opt} (if any; default: \code{NULL}).}
 
 \item{exec}{\code{character} string specifying the TELEMAC-2D executable (system command).
-Default: \code{NULL} (\code{\link{simulate_t2d}} won't work).}
+Default: \code{NULL}. Only required for \code{\link{simulate_t2d}} to work.}
 
 \item{x}{An object of class \code{t2d}.}
 
@@ -59,7 +59,7 @@ cli_obj <- cli(geo_obj)
 cas_obj <- cas()
 
 # TELEMAC-2D setup
-t2d_obj <- t2d("Test setup", "path/to/wdir", exec = "telemac2d.py",
+t2d_obj <- t2d("Test setup", "path/to/wdir",
                cas = cas_obj, geo = geo_obj, cli = cli_obj)
 t2d_obj
 

@@ -145,7 +145,7 @@ Finally we can export the TELEMAC-2D input files and run the model.
 
 ```{r run_rainfall, eval = FALSE}
 write_t2d(t2d_obj)
-t2d_sim <- simulate_t2d(t2d_obj)
+t2d_sim <- simulate_t2d(t2d_obj, exec = "telemac2d.py")
 ```
 
 ```{r add_result_rainfall, echo = FALSE}
@@ -222,7 +222,7 @@ t2d_obj <- t2d("Example: static rainfall with runoff, CN from file",
 ```
 ```{r run_rainfall_runoff, eval = FALSE}
 write_t2d(t2d_obj)
-t2d_sim <- simulate_t2d(t2d_obj)
+t2d_sim <- simulate_t2d(t2d_obj, exec = "telemac2d.py")
 ```
 
 ```{r add_result_rainfall_runoff, echo = FALSE}
@@ -281,7 +281,7 @@ t2d_obj <- t2d("Example: dynamic rainfall with runoff, CN from geo",
 ```
 ```{r run_rainfall_runoff_dyn, eval = FALSE}
 write_t2d(t2d_obj)
-t2d_sim <- simulate_t2d(t2d_obj)
+t2d_sim <- simulate_t2d(t2d_obj, exec = "telemac2d.py")
 ```
 
 ```{r add_result_rainfall_runoff_dyn, echo = FALSE}

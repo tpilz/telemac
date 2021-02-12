@@ -67,7 +67,7 @@ validate_t2d <- function(x) {
 #' will be written to. TELEMAC-2D's input filenames must be relative to this directory!
 #' Default: current working directoy.
 #' @param exec \code{character} string specifying the TELEMAC-2D executable (system command).
-#' Default: \code{NULL} (\code{\link{simulate_t2d}} won't work).
+#' Default: \code{NULL}. Only required for \code{\link{simulate_t2d}} to work.
 #' @param cas Passed to \code{\link{cas}} (preferably a \code{t2d_cas}) object).
 #' @param geo Passed to \code{\link{geo}} (preferably a \code{t2d_geo}) object).
 #' @param cli Passed to \code{\link{cli}} (preferably a \code{t2d_cli}) object).
@@ -94,7 +94,7 @@ validate_t2d <- function(x) {
 #' cas_obj <- cas()
 #'
 #' # TELEMAC-2D setup
-#' t2d_obj <- t2d("Test setup", "path/to/wdir", exec = "telemac2d.py",
+#' t2d_obj <- t2d("Test setup", "path/to/wdir",
 #'                cas = cas_obj, geo = geo_obj, cli = cli_obj)
 #' t2d_obj
 #'
@@ -115,7 +115,7 @@ print.t2d <- function(x, ...) {
   cat("\n")
   cat("Title:                 ", x$title, "\n")
   cat("Project directory:     ", x$wdir, "\n")
-  cat("TELEMAC-2D executable: ", x$exec, "\n")
+  cat("TELEMAC-2D executable: ", ifelse(is.null(x$exec), "<unspecified>", x$exec), "\n")
   cat("Steering parameters:    A t2d_cas object pointing to", attr(x$cas, "file"), "\n")
   cat("Geometry / mesh:        A t2d_geo object pointing to", attr(x$geo, "file"), "\n")
   cat("Boundary conditions:    A t2d_cli object pointing to", attr(x$cli, "file"), "\n")
