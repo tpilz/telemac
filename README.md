@@ -1,5 +1,5 @@
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.com/tpilz/telemac.svg?branch=master)](https://travis-ci.com/tpilz/telemac)
+[![R-CMD-check](https://github.com/tpilz/telemac/workflows/R-CMD-check/badge.svg)](https://github.com/tpilz/telemac/actions)
 <!-- badges: end -->
 
 # telemac
