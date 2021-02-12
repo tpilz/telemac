@@ -1,3 +1,4 @@
+\dontrun{
 library(raster)
 library(sf)
 library(tidyverse)
@@ -43,3 +44,4 @@ geo_priv <- geo(tin_obj, dem = dem_priv)
 geo_priv
 str(geo_priv)
 plot(geo_priv, s = 30, v = "cn")
+}

@@ -67,6 +67,7 @@ Initialise a mesh (geometry) object for use within TELEMAC.
 Also note the associated \code{\link{plot.t2d_geo}} method.
 }
 \examples{
+\dontrun{
 library(raster)
 library(sf)
 library(tidyverse)
@@ -112,4 +113,5 @@ geo_priv <- geo(tin_obj, dem = dem_priv)
 geo_priv
 str(geo_priv)
 plot(geo_priv, s = 30, v = "cn")
+}
 }

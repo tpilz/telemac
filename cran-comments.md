@@ -1,3 +1,6 @@
+## Resubmission
+This is a resubmission. Resolved the unexpected NOTE of lengthy examples. The NOTEs as described below remain.
+
 ## Test environments
 * local linux openSUSE LEAP 15.2, R 4.0.3
 * win-builder, R 4.0.3, devel r79988
