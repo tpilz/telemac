@@ -15,7 +15,7 @@ t2d(title = "", wdir = ".", cas, geo, cli, res = NULL, opt = NULL, exec = NULL)
 
 \item{wdir}{\code{character} string, the project directory were inputs and outputs
 will be written to. TELEMAC-2D's input filenames must be relative to this directory!
-Default: current working directoy.}
+Default: current working directory.}
 
 \item{cas}{Passed to \code{\link{cas}} (preferably a \code{t2d_cas}) object).}
 
@@ -37,8 +37,9 @@ Default: \code{NULL}. Only required for \code{\link{simulate_t2d}} to work.}
 \item{...}{Optional arguments passed to \code{print} methods.}
 }
 \value{
-An object of class \code{t2d}, that is a list with elements title, wdir,
-exec, cas, geo, cli, res TODO.
+An object of class \code{t2d}, that is a list with elements \code{title},
+\code{wdir}, \code{exec}, \code{cas}, \code{geo}, \code{cli}, \code{res}, and \code{opt}.
+The latter five are objects of type \code{t2d_*}.
 }
 \description{
 Initialises a project for 2-dimensional hydrodynamic modelling with TELEMAC-2D.

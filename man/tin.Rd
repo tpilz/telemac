@@ -36,9 +36,9 @@ element (triangle). In TELEMAC termed \code{IKLE}.}
 to rows in \code{x}, each marking a boundary point. In TELEMAC termed \code{IPOBO}.}
 
 \item{s}{\code{numeric}, if \code{x} is a \code{list}: OPTIONAL value giving the
-resolution of vortices along the boundary line for triangulation. If not given,
+resolution of vertices along the boundary line for triangulation. If not given,
 the points are used as they are supplied, otherwise \code{line_spacing} is called to ensure
-equal spacing of vortices with the given segment lengths.}
+equal spacing of vertices with the given segment lengths.}
 
 \item{s_brk}{As \code{s} but for breaklines.}
 
@@ -78,7 +78,7 @@ elements are required to perform the triangulation:
     last point will be connected to close the boundary.}
   \item{breaklines}{OPTIONAL, a \code{matrix}, \code{data.frame}, \code{SpatialLines*} or \code{sf}
     object with three columns
-    \code{x} and \code{y}, the x and y coordinates of vortices along the breaklines,
+    \code{x} and \code{y}, the x and y coordinates of vertices along the breaklines,
     and \code{line}, an identifier to identify individual breaklines.}
 }
 }

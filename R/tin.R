@@ -92,7 +92,7 @@ validate_tin <- function(x) {
 #'     last point will be connected to close the boundary.}
 #'   \item{breaklines}{OPTIONAL, a \code{matrix}, \code{data.frame}, \code{SpatialLines*} or \code{sf}
 #'     object with three columns
-#'     \code{x} and \code{y}, the x and y coordinates of vortices along the breaklines,
+#'     \code{x} and \code{y}, the x and y coordinates of vertices along the breaklines,
 #'     and \code{line}, an identifier to identify individual breaklines.}
 #' }
 #' @note
@@ -138,9 +138,9 @@ tin.matrix <- function(x, ..., ikle, ipobo) {
 }
 
 #' @param s \code{numeric}, if \code{x} is a \code{list}: OPTIONAL value giving the
-#' resolution of vortices along the boundary line for triangulation. If not given,
+#' resolution of vertices along the boundary line for triangulation. If not given,
 #' the points are used as they are supplied, otherwise \code{line_spacing} is called to ensure
-#' equal spacing of vortices with the given segment lengths.
+#' equal spacing of vertices with the given segment lengths.
 #' @param s_brk As \code{s} but for breaklines.
 #' @param a \code{numeric}, maximum triangle area; passed to \code{\link[RTriangle]{triangulate}}.
 #' Default: squared spacing of points (either given as \code{s} or inferred from \code{x$boundary}).

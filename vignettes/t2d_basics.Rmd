@@ -43,7 +43,7 @@ For a basic TELEMAC-2D setup three input files are required: a geometry file (`*
 
 The geometry of a TELEMAC setup is stored in a binary file of type SELAFIN (also referred to as SERAFIN). The mesh is typically stored as a triangulated irregular network (TIN). There are several possible approaches to obtain such a mesh, which shall not be discussed here in greater detail. In this demonstration we will start with a typical DEM represented by a regular grid and convert it into a TIN by constrained Delaunay triangulation using the well-known [Triangle algorithm](http://www.cs.cmu.edu/~quake/triangle.html).
 
-First we read an example DEM. This shows an urban area in the northwestern region of the city of Lagos, Nigeria, and is derived from the (after registration) freely avilable [MERIT Hydro DEM](http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro/). Despite its coarse resolution of about 90 x 90 m the DEM is hydrologically conditioned and is known for a relatively good performance in hydrodynamic modelling in comparison to other freely available DEM products. However, in real-world applications, high resolution LiDAR-based DEMs are certainly required to obtain optimal model results.
+First we read an example DEM. This shows an urban area in the northwestern region of the city of Lagos, Nigeria, and is derived from the (after registration) freely available [MERIT Hydro DEM](http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro/). Despite its coarse resolution of about 90 x 90 m the DEM is hydrologically conditioned and is known for a relatively good performance in hydrodynamic modelling in comparison to other freely available DEM products. However, in real-world applications, high resolution LiDAR-based DEMs are certainly required to obtain optimal model results.
 
 ```{r read_dem, message = FALSE, fig.width = 6, fig.height = 6}
 dem_rast <- raster(system.file("dem/dem_merit_lagos.tif", package = "telemac"))
@@ -126,7 +126,7 @@ cli_obj <- cli_obj %>%
 
 ## The steering file (*.cas)
 
-The steering file is a simple text file that contains a number of key--value pairs (delimited by characters `:` or `=`), the steering parameters for a TELEMAC simulation. The `telemac` package comes with function `cas()` to initialise a `t2d_cas` object with steering parameters associated with a steering file. The function provides differen options, e.g. providing the name of an existing file or creating a template configuration if no argument is given. The template configuration contains a number of arbitrary parameters, in this case defining a strong rainfall event of 66 mm over 4 hours, dry initial conditions, a total simulation period of one day with adaptive temporal resolution using a finite-volume scheme, and output printout every 3600 timesteps. Note that there is a huge number of possible steering parameters that are not included in the template file (for these the respective default settings are used by TELEMAC).
+The steering file is a simple text file that contains a number of key--value pairs (delimited by characters `:` or `=`), the steering parameters for a TELEMAC simulation. The `telemac` package comes with function `cas()` to initialise a `t2d_cas` object with steering parameters associated with a steering file. The function provides different options, e.g. providing the name of an existing file or creating a template configuration if no argument is given. The template configuration contains a number of arbitrary parameters, in this case defining a strong rainfall event of 66 mm over 4 hours, dry initial conditions, a total simulation period of one day with adaptive temporal resolution using a finite-volume scheme, and output printout every 3600 timesteps. Note that there is a huge number of possible steering parameters that are not included in the template file (for these the respective default settings are used by TELEMAC).
 
 ```{r cas_obj}
 cas_obj <- cas(fname = "steering.cas")
@@ -177,14 +177,14 @@ t2d_obj$res <- results(system.file("telemac/basics/results.slf", package = "tele
                        vars = "water depth", times = 3600 * c(0,1,4,12,24))
 ```
 
-The simulation results are represented as a `t2d_res` object with header information, the underlying mesh as `t2d_tin` object, a log of TELEMAC's runtime messages, and the actual data as a tidy `data.frame`. For a first investigation it is always good to have a look at the log file. The runtme log is stored in the `t2d_res` object and is accessible via `t2d_obj$res$log` (not shown here). Otherwise there is a print method to show some general information.
+The simulation results are represented as a `t2d_res` object with header information, the underlying mesh as `t2d_tin` object, a log of TELEMAC's runtime messages, and the actual data as a tidy `data.frame`. For a first investigation it is always good to have a look at the log file. The runtime log is stored in the `t2d_res` object and is accessible via `t2d_obj$res$log` (not shown here). Otherwise there is a print method to show some general information.
 
 ```{r results}
 t2d_obj$res
 str(t2d_obj$res)
 ```
 
-There is also a function `write_results()` to write data into a SELAFIN file. This can be used, for instance, to reduce the amount of data or write restrospectively corrected data. Note that in this example we have only imported a few selected timesteps that will now be written into a SELAFIN file.
+There is also a function `write_results()` to write data into a SELAFIN file. This can be used, for instance, to reduce the amount of data or write retrospectively corrected data. Note that in this example we have only imported a few selected timesteps that will now be written into a SELAFIN file.
 
 ```{r results_export, eval = FALSE}
 # change associated file (otherwise the original file would be overwritten) 

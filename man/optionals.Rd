@@ -52,7 +52,7 @@ Initialise optional input files for TELEMAC-2D.
 When providing optional input files to a \code{t2d} setup the user still
 needs to add the respective keywords to the steering (cas) file, otherwise the
 optional input will be ignored! The reason is that many optional input files
-require additional seetings (keywords in the cas file) that cannot be foreseen.
+require additional settings (keywords in the cas file) that cannot be foreseen.
 
 So far only text-based optional input files are supported (e.g.
 \code{SECTIONS INPUT FILE} or \code{FORMATTED DATA FILE}) but no binary files.

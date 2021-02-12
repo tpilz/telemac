@@ -90,7 +90,7 @@ IntegerVector find_ipobo(IntegerMatrix ikle, NumericVector x, NumericVector y) {
   IntegerMatrix trav1(npoin,2);
   IntegerVector nbor(npoin);
   int g, h, i1, i2, m1, m2, ii, ji;
-  int imax, nptfr, noeud1, noeud2, nile;
+  int nptfr, noeud1, noeud2, nile;
   double som1, som2, y2;
   bool swap;
 
@@ -111,7 +111,6 @@ IntegerVector find_ipobo(IntegerMatrix ikle, NumericVector x, NumericVector y) {
   for (int i = 1; i < npoin; ++i) {
     iadr[i] = iadr[i-1] + nvois[i-1];
   }
-  imax = iadr[npoin-1] + nvois[npoin-1] - 1;
 
   // fill ifabor (if -1 it is a bounbdary point)
   for (int i = 0; i < nface; ++i) {

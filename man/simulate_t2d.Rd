@@ -42,5 +42,5 @@ TELEMAC-2D runs are often rather long. During simulation time this command will,
 by default, write nothing to console but store the output in the specified log file.
 
 In case of large projects with expected long model runtimes it might make
-more sense to run TELEMAC-2D directly istead of using this function.
+more sense to run TELEMAC-2D directly instead of using this function.
 }

@@ -65,7 +65,7 @@ validate_t2d <- function(x) {
 #'     \code{TITLE} in the steering file).
 #' @param wdir \code{character} string, the project directory were inputs and outputs
 #' will be written to. TELEMAC-2D's input filenames must be relative to this directory!
-#' Default: current working directoy.
+#' Default: current working directory.
 #' @param exec \code{character} string specifying the TELEMAC-2D executable (system command).
 #' Default: \code{NULL}. Only required for \code{\link{simulate_t2d}} to work.
 #' @param cas Passed to \code{\link{cas}} (preferably a \code{t2d_cas}) object).
@@ -76,8 +76,9 @@ validate_t2d <- function(x) {
 #' object will be generated.
 #' @param opt Object of class \code{t2d_opt} (if any; default: \code{NULL}).
 #'
-#' @return An object of class \code{t2d}, that is a list with elements title, wdir,
-#' exec, cas, geo, cli, res TODO.
+#' @return An object of class \code{t2d}, that is a list with elements \code{title},
+#' \code{wdir}, \code{exec}, \code{cas}, \code{geo}, \code{cli}, \code{res}, and \code{opt}.
+#' The latter five are objects of type \code{t2d_*}.
 #'
 #' @details First, make sure TELEMAC-2D is installed and works!
 #'
@@ -148,7 +149,7 @@ print.t2d <- function(x, ...) {
 #'
 #' If \code{x$wdir} does not exist, it will be created.
 #'
-#' If \code{x$wdir} is a relative path it will be considered reltive to the current
+#' If \code{x$wdir} is a relative path it will be considered relative to the current
 #' working directory.
 #'
 #' All \code{t2d_*} objects will be written to the associated filenames into directory
@@ -232,7 +233,7 @@ write_t2d <- function(x) {
 #' by default, write nothing to console but store the output in the specified log file.
 #'
 #' In case of large projects with expected long model runtimes it might make
-#' more sense to run TELEMAC-2D directly istead of using this function.
+#' more sense to run TELEMAC-2D directly instead of using this function.
 #' @export
 simulate_t2d <- function(x, log = "run.log", res = NULL, vars = "all", exec) {
 

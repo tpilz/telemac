@@ -212,6 +212,3 @@ write_cli.t2d <- function(x) {
   x <- validate_t2d(x)
   write_cli.t2d_cli(x$cli)
 }
-
-
-# TODO: method to adapt boundary conditions based on given shapefile (lines with boundary parameters)

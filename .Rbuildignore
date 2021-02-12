@@ -4,3 +4,5 @@
 ^Meta$
 ^LICENSE\.md$
 ^\.github$
+^TODO\.md$
+^cran-comments\.md$

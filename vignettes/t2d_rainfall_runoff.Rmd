@@ -20,7 +20,7 @@ knitr::opts_chunk$set(collapse = TRUE)
 Sys.setlocale("LC_ALL","en_GB")
 ```
 
-This vignette outlines how to conduct rainfall--runoff simulations with TELEMAC-2D using the `telemac` R package as interface. This demonstration reproduces the pluie example that cames with the TELEMAC code. The case study along with the rainfall--runoff routine and how to use TELEMAC-2D with dynamic rainfall is described by [Ligier (2016)](https://henry.baw.de/handle/20.500.11970/104541).
+This vignette outlines how to conduct rainfall--runoff simulations with TELEMAC-2D using the `telemac` R package as interface. This demonstration reproduces the pluie example that comes with the TELEMAC code. The case study along with the rainfall--runoff routine and how to use TELEMAC-2D with dynamic rainfall is described by [Ligier (2016)](https://henry.baw.de/handle/20.500.11970/104541).
 
 # TELEMAC-2D initialisation
 
@@ -170,7 +170,7 @@ ggplot(res_df, aes(x = x, y = y, fill = value)) +
 
 # Example II: constant rainfall with runoff and CN values read from a file
 
-For this example we will use the runoff mdoule of TELEMAC-2D. First we define CN values in an external file. We only need to provide the node points that are then used for interpolation to grid within TELEMAC's bief module. This procedure is for illustration, the CN values in the geometry file will still be ignored so far.
+For this example we will use the runoff module of TELEMAC-2D. First we define CN values in an external file. We only need to provide the node points that are then used for interpolation to grid within TELEMAC's bief module. This procedure is for illustration, the CN values in the geometry file will still be ignored so far.
 
 ```{r cn_file}
 cn_dat <- rbind(

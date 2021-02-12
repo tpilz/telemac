@@ -21,7 +21,7 @@ in the steering parameters.
 
 If \code{x$wdir} does not exist, it will be created.
 
-If \code{x$wdir} is a relative path it will be considered reltive to the current
+If \code{x$wdir} is a relative path it will be considered relative to the current
 working directory.
 
 All \code{t2d_*} objects will be written to the associated filenames into directory
