@@ -28,7 +28,6 @@ Imports:
     raster,
     Rcpp,
     rlang,
-    RTriangle,
     sf,
     sp,
     stringr,
@@ -39,6 +38,7 @@ Suggests:
     knitr,
     rgdal,
     rmarkdown,
+    RTriangle,
     stars,
     terrainmeshr,
     tidyverse

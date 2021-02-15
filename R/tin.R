@@ -151,6 +151,10 @@ tin.matrix <- function(x, ..., ikle, ipobo) {
 tin.list <- function(x, ..., s, s_brk, a, q = 30) {
   stopifnot("boundary" %in% names(x))
 
+  # due to license conflict this package must appear in "Suggests"
+  if (!requireNamespace("RTriangle", quietly = TRUE))
+    stop("Package \"RTriangle\" is needed for this function. Please install it.", call. = FALSE)
+
   if (inherits(x$boundary, "SpatialLinesDataFrame"))
     x$boundary <- sp::as.SpatialLines.SLDF(x$boundary)
 

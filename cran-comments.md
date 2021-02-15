@@ -1,5 +1,7 @@
 ## Resubmission
-This is a resubmission. Resolved the unexpected NOTE of lengthy examples. The NOTEs as described below remain.
+This is a resubmission. Resolved NOTE about license conflict with package `RTriangle`. As suggested by Uwe Ligges I moved the package to the `Suggests` field as it is required only by one function.
+
+3 further NOTEs remain, see below.
 
 ## Test environments
 * local linux openSUSE LEAP 15.2, R 4.0.3
@@ -9,7 +11,7 @@ This is a resubmission. Resolved the unexpected NOTE of lengthy examples. The NO
 * Ubuntu 20.04.2 (github actions), R 4.0.3, devel r79883
 
 ## R CMD check results
-0 errors, 0 warnings, 4 notes:
+0 errors, 0 warnings, 3 notes:
 
 * Maintainer: 'Tobias Pilz <topilz@pik-potsdam.de>'
 
@@ -19,10 +21,6 @@ This is a resubmission. Resolved the unexpected NOTE of lengthy examples. The NO
    TELEMAC (3:27, 4:36, 6:40)
    
    -> This was intentionally written in captial letters.
-
-* Package has a FOSS license but eventually depends on the following package which restricts use: RTriangle
-
-  -> License of RTriangle is CC BY-NC-SA 4.0 (which is, I think, no appropriate software license). Further License information at https://github.com/davidcsterratt/RTriangle/blob/master/pkg/LICENSE.note. I think it should not be a problem for me choosing GPL for my telemac package.
 
 * installed size is  5.4Mb
     sub-directories of 1Mb or more:
