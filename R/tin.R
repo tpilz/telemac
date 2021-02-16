@@ -46,13 +46,15 @@ validate_tin <- function(x) {
                 "outer boundary has to come first and point sequence has to be continuous!"), call. = F)
   pts_bnd <- x$points[x$boundaries,]
   pt_min_i <- which.min(pts_bnd[,2])
-  pts_check <- pts_bnd[pt_min_i + c(-1, 0, 1),]
+  i_check <- (pt_min_i + c(-1, 0, 1)) %% nrow(pts_bnd)
+  i_check <- replace(i_check, i_check == 0, nrow(pts_bnd))
+  pts_check <- pts_bnd[i_check,]
   # formula see https://en.wikipedia.org/wiki/Curve_orientation
   det <- (pts_check[2,1] - pts_check[1,1]) * (pts_check[3,2] - pts_check[1,2]) -
     (pts_check[3,1] - pts_check[1,1]) * (pts_check[2,2] - pts_check[1,2])
   if (det < 0)
     stop(paste0("Boundary points do not comply with requirements: ",
-                "orientation as to be anticlockwise!"), call. = F)
+                "orientation has to be anticlockwise!"), call. = F)
 
   x
 }
@@ -62,7 +64,7 @@ validate_tin <- function(x) {
 #' Initialise a TIN mesh object for use within TELEMAC.
 #'
 #' @param x Either: a \code{character} string providing the name of a SELAFIN
-#' file of which the mesh will be extracted;
+#' (\code{*.slf}) or a Gmsh mesh (\code{*.msh}, format version 2) file of which the mesh will be extracted;
 #' a \code{matrix} of mesh points with 2 columns containing the x and y coordinates
 #' (arguments \code{ikle} and \code{ipobo} are required);
 #' a \code{list} with boundary and breakline definitions (see \code{Details}).
@@ -100,7 +102,7 @@ validate_tin <- function(x) {
 #'
 #' Make sure breaklines do not intersect as this is not supported by the Triangle
 #' algorithm. A possible workaround to split intersecting breaklines in R using
-#' [sf](https://r-spatial.github.io/sf) is shown in the examples.
+#' \href{https://r-spatial.github.io/sf}{sf} is shown in the examples.
 #'
 #' If you want to construct a \code{t2d_tin} object and get the error
 #' \code{Boundary points do not comply with requirements: [...]}
@@ -115,11 +117,18 @@ tin <- function(x, ...) UseMethod("tin")
 #' @name tin
 #' @export
 tin.character <- function(x, ...) {
-  x_head <- read_slf_header(x)
-  pts <- cbind(x_head$x, x_head$y)
-  tri <- x_head$ikle
+  fileext <- tail(unlist(strsplit(x, ".", fixed = T)), 1)
+
+  if (fileext == "slf")
+    dat <- read_slf_header(x)
+  else if (fileext == "msh")
+    dat <- read_msh(x)
+  else stop("Unsupported file extension!", call. = F)
+
+  pts <- cbind(dat$x, dat$y)
+  tri <- dat$ikle
   edg <- get_tri_edg(tri)
-  bnd <- x_head$ipobo[x_head$ipobo > 0]
+  bnd <- dat$ipobo[dat$ipobo > 0]
   brk <- NULL
   validate_tin(new_tin(pts, tri, edg, bnd, brk))
 }
