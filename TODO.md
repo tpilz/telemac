@@ -1,8 +1,5 @@
 # Package development
-- add unit tests
-    - use `testthat`, see respective chapter in [R Packages](https://r-pkgs.org/tests.html)
-    - register at [codecov](https://about.codecov.io)
-    - see also package [covr](https://cran.r-project.org/package=covr)
+- add more unit tests
 
 # Functionalities
 - get flow through defined section
@@ -18,11 +15,9 @@
                 product_i = flux_x[i]*normals[i+1][0] + flux_y[i]*normals[i+1][1]
                 product_i_plus_1 = flux_x[i+1]*normals[i+1][0] + flux_y[i+1]*normals[i+1][1]
                 flux += (product_i + product_i_plus_1)*lengthes[i+1]/2.
+- support holes (inner boundaries) in TIN generation (so far only outer boundary and breaklines)
+- Gmsh support: add function to prepare Gmsh input (geometry file as in pputils gis2gmsh.py)
 - line_spacing(): works for segments, should also work for closed boundaries (distance between first and last point should match)
-- tin():
-    - add tests:
-        - orientation has to be anticlockwise (otherwise throw an error)
-        - basic functionality
 
 # CRAN submission (general)
 - In case of incompatible licence of a package in `Imports`: move package to `Suggests` (in case the package is not fundamentally required, in such a case an own implementation would be required)

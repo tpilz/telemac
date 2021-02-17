@@ -1,5 +1,6 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/tpilz/telemac/workflows/R-CMD-check/badge.svg)](https://github.com/tpilz/telemac/actions)
+[![Codecov test coverage](https://codecov.io/gh/tpilz/telemac/branch/master/graph/badge.svg)](https://codecov.io/gh/tpilz/telemac?branch=master)
 <!-- badges: end -->
 
 # telemac
