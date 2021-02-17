@@ -30,6 +30,9 @@ an object of class \code{t2d} with element \code{cas}.}
 \item{fname}{\code{character}, a file name (extension .cas) where the steering
 parameters should be written to.}
 }
+\value{
+Returns input \code{x} invisibly.
+}
 \description{
 Writes the steering file for a TELEMAC project.
 }

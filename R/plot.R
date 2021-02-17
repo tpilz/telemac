@@ -9,6 +9,7 @@
 #' @param v \code{character}, name of the variable that is to be plotted
 #' (only one at a time; default is \code{elevation}).
 #' @param ... Arguments passed to \code{\link[raster]{plot}}.
+#' @return No return value, called for side effects (plot).
 #' @export
 plot.t2d_geo <- function(x, s, v = "elevation", ...) {
   x_rast <- tin2grid(x, s = s, output = "raster", v = v)
@@ -29,6 +30,7 @@ plot.t2d_geo <- function(x, s, v = "elevation", ...) {
 #' @param t \code{integer}, timestep that is to be plotted
 #' (only one at a time; default is to plot the first timestep).
 #' @param ... Arguments passed to \code{\link[raster]{plot}}.
+#' @return No return value, called for side effects (plot).
 #' @export
 plot.t2d_res <- function(x, s, v = NULL, t = 0, ...) {
   x_rast <- tin2grid(x, s = s, output = "raster", v = v, t = t)
@@ -41,6 +43,7 @@ plot.t2d_res <- function(x, s, v = NULL, t = 0, ...) {
 #'
 #' @param x An object of class \code{t2d_tin}.
 #' @param ... Arguments passed to \code{\link[graphics]{plot}}.
+#' @return No return value, called for side effects (plot).
 #' @export
 plot.t2d_tin <- function(x, ...) {
   plot(x$points, asp = 1, ...)
@@ -54,6 +57,7 @@ plot.t2d_tin <- function(x, ...) {
 #'
 #' @param x An object of class \code{t2d_tin}.
 #' @param ... Arguments passed to \code{\link[graphics]{plot}}.
+#' @return No return value, called for side effects (plot).
 #' @export
 lines.t2d_tin <- function(x, ...) {
   # adapted from RTriangle::plot.triangulation()

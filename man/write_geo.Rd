@@ -15,6 +15,9 @@ write_geo(x)
 \arguments{
 \item{x}{An object of class \code{t2d_geo} or \code{t2d}.}
 }
+\value{
+Returns input \code{x} invisibly.
+}
 \description{
 Writes geometry / mesh information into a SELAFIN file.
 }

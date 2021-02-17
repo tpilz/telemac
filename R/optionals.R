@@ -185,7 +185,7 @@ print.t2d_opt_LINES <- function(x, ..., n = 10) {
 #' Writes optional TELEMAC-2D input file(s).
 #'
 #' @param x An object of class \code{t2d_opt} or \code{t2d}.
-#'
+#' @return Returns input \code{x} invisibly.
 #' @export
 write_opt <- function(x) UseMethod("write_opt")
 
@@ -196,6 +196,7 @@ write_opt.t2d_opt <- function(x) {
   waste <- lapply(x$file, check_file, ext = "txt")
   for (f in seq_along(x$file))
     write(x$value[[f]], x$file[f], sep = "\n")
+  invisible(x)
 }
 
 #' @name write_opt

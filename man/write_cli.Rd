@@ -15,6 +15,9 @@ write_cli(x)
 \arguments{
 \item{x}{An object of class \code{t2d_cli} or \code{t2d}.}
 }
+\value{
+Returns input \code{x} invisibly.
+}
 \description{
 Writes boundary conditions for a TELEMAC simulation.
 }

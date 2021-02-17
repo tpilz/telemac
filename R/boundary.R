@@ -188,6 +188,8 @@ read_cli <- function(fname) {
 #'
 #' @param x An object of class \code{t2d_cli} or \code{t2d}.
 #'
+#' @return Returns input \code{x} invisibly.
+#'
 #' @export
 write_cli <- function(x) UseMethod("write_cli")
 
@@ -204,6 +206,7 @@ write_cli.t2d_cli <- function(x) {
     dplyr::mutate_at(dplyr::vars(4:7, 9:11), sprintf, fmt = "%.3f")
 
   write.table(x, fname, quote = F, row.names = F, col.names = F)
+  invisible(x)
 }
 
 #' @name write_cli

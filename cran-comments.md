@@ -1,5 +1,5 @@
 ## Resubmission
-This is a resubmission. Resolved NOTE about license conflict with package `RTriangle`. As suggested by Uwe Ligges I moved the package to the `Suggests` field as it is required only by one function.
+This is a resubmission. Added `\value` tags to .Rd files of exported methods.
 
 3 further NOTEs remain, see below.
 

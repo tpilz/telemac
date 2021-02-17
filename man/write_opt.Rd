@@ -15,6 +15,9 @@ write_opt(x)
 \arguments{
 \item{x}{An object of class \code{t2d_opt} or \code{t2d}.}
 }
+\value{
+Returns input \code{x} invisibly.
+}
 \description{
 Writes optional TELEMAC-2D input file(s).
 }

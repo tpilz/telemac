@@ -287,6 +287,8 @@ read_geo <- function(fname, privar = TRUE) {
 #'
 #' @param x An object of class \code{t2d_geo} or \code{t2d}.
 #'
+#' @return Returns input \code{x} invisibly.
+#'
 #' @export
 write_geo <- function(x) UseMethod("write_geo")
 
@@ -324,6 +326,7 @@ write_geo.t2d_geo <- function(x) {
     values = vals
   )
   write_slf_variable(fname, x_var)
+  invisible(x)
 }
 
 #' @name write_geo

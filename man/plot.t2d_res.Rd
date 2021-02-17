@@ -20,6 +20,9 @@ has to be interpolated to a grid for that).}
 
 \item{...}{Arguments passed to \code{\link[raster]{plot}}.}
 }
+\value{
+No return value, called for side effects (plot).
+}
 \description{
 Plots selected variable and timestep of objects of class \code{t2d_res}
 by interpolating the underlying mesh to a regular grid and using \code{\link[raster]{plot}}

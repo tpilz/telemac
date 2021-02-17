@@ -161,6 +161,7 @@ read_cas <- function(fname) {
 #'    steering parameters;
 #'    an object of class \code{t2d} with element \code{cas}.
 #' @param ... Arguments passed to or from other methods.
+#' @return Returns input \code{x} invisibly.
 #' @note An existing steering file will be silently overwritten.
 #' @examples
 #' \dontrun{
@@ -189,6 +190,7 @@ write_cas.data.frame <- function(x, fname, ...) {
   cont <- grep("^(   :   )", dat_out)
   dat_out[cont] <- sub("   :   ", "", dat_out[cont])
   write(dat_out, file = fname, sep = "\n")
+  invisible(x)
 }
 
 #' @name write_cas

@@ -11,6 +11,9 @@
 
 \item{...}{Arguments passed to \code{\link[graphics]{plot}}.}
 }
+\value{
+No return value, called for side effects (plot).
+}
 \description{
 Adds the mesh (triangles) of an object of class \code{t2d_tin}
 as lines to an existing plot.

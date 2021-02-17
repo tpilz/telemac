@@ -16,6 +16,9 @@
 
 \item{...}{Arguments passed to \code{\link[raster]{plot}}.}
 }
+\value{
+No return value, called for side effects (plot).
+}
 \description{
 Plots selected objects of class \code{t2d_geo} by interpolating the underlying mesh
 to a regular grid and using \code{\link[raster]{plot}} of package \code{\link[raster]{raster}}.
