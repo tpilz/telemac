@@ -11,6 +11,9 @@ write_slf_header(fname, header)
 
 \item{header}{A \code{list} with all header information (see output of \code{\link{read_slf_header}}).}
 }
+\value{
+No return value, called for side effects.
+}
 \description{
 Writes the header of a SELAFIN file (*.slf).
 }

@@ -12,6 +12,9 @@ write_slf_variable(fname, data)
 \item{data}{A \code{list} with variable values; see output of \code{\link{read_slf_variable}}
 for the required elements; in addition an element 'precision' (see \code{\link{read_slf_header}}) is needed.}
 }
+\value{
+No return value, called for side effects.
+}
 \description{
 Writes variable values into a SELAFIN file (*.slf).
 }

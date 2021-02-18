@@ -141,6 +141,7 @@ print.t2d <- function(x, ...) {
 #' Writes all input files of a TELEMAC-2D project setup.
 #'
 #' @param x An object of class \code{t2d}.
+#' @return Returns input \code{x} invisibly.
 #' @note This function is basically a wrapper around other \code{write_*} functions
 #' of the telemac package.
 #'
@@ -201,6 +202,8 @@ write_t2d <- function(x) {
   write_cli(x)
   if (!is.null(x$opt))
     write_opt(x)
+
+  invisible(x)
 }
 
 

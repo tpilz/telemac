@@ -9,6 +9,9 @@ write_t2d(x)
 \arguments{
 \item{x}{An object of class \code{t2d}.}
 }
+\value{
+Returns input \code{x} invisibly.
+}
 \description{
 Writes all input files of a TELEMAC-2D project setup.
 }

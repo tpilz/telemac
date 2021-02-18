@@ -213,6 +213,7 @@ read_slf_variable <- function(fname, seek_start, vars, nv, fsize, npoin, times =
 #'
 #' @param fname \code{character}, name of the SELAFIN file to be created.
 #' @param header A \code{list} with all header information (see output of \code{\link{read_slf_header}}).
+#' @return No return value, called for side effects.
 #' @note
 #' If a file \code{fname} already exists, it will be silently overwritten.
 #'
@@ -303,6 +304,7 @@ write_slf_header <- function(fname, header) {
 #' @param fname \code{character}, name of the SELAFIN file (has to exist already and contain header information).
 #' @param data A \code{list} with variable values; see output of \code{\link{read_slf_variable}}
 #' for the required elements; in addition an element 'precision' (see \code{\link{read_slf_header}}) is needed.
+#' @return No return value, called for side effects.
 #' @export
 write_slf_variable <- function(fname, data) {
   stopifnot(is.character(fname) && length(fname) == 1)

@@ -1,5 +1,5 @@
 ## Resubmission
-This is a resubmission. Added `\value` tags to .Rd files of exported methods.
+This is a resubmission. Added missing `\value` tags to .Rd files of exported methods.
 
 3 further NOTEs remain, see below.
 
