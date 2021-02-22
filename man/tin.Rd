@@ -20,7 +20,7 @@ tin(x, ...)
 }
 \arguments{
 \item{x}{Either: a \code{character} string providing the name of a SELAFIN
-file of which the mesh will be extracted;
+(\code{*.slf}) or a Gmsh mesh (\code{*.msh}, format version 2) file of which the mesh will be extracted;
 a \code{matrix} of mesh points with 2 columns containing the x and y coordinates
 (arguments \code{ikle} and \code{ipobo} are required);
 a \code{list} with boundary and breakline definitions (see \code{Details}).}
@@ -87,7 +87,7 @@ Duplicated mesh points are silently removed.
 
 Make sure breaklines do not intersect as this is not supported by the Triangle
 algorithm. A possible workaround to split intersecting breaklines in R using
-[sf](https://r-spatial.github.io/sf) is shown in the examples.
+\href{https://r-spatial.github.io/sf}{sf} is shown in the examples.
 
 If you want to construct a \code{t2d_tin} object and get the error
 \code{Boundary points do not comply with requirements: [...]}

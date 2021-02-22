@@ -41,8 +41,11 @@ Suggests:
     RTriangle,
     stars,
     terrainmeshr,
-    tidyverse
+    tidyverse,
+    testthat (>= 3.0.0),
+    covr
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 LinkingTo: 
     Rcpp
+Config/testthat/edition: 3

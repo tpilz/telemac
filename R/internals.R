@@ -2,7 +2,7 @@
 check_file <- function(f, ext, check_rel = FALSE) {
   stopifnot(is.character(f) && length(f) == 1)
 
-  fileext <- dplyr::last(unlist(strsplit(f, ".", fixed = T)))
+  fileext <- tail(unlist(strsplit(f, ".", fixed = T)), 1)
   if (length(fileext) == 0 || fileext != ext)
     stop("File extension must be '.", ext, "'!", call. = F)
 
@@ -71,3 +71,6 @@ interpol_privar <- function(x, p, output, ...) {
   list(values = do.call("interpol", args),
        unit = p$unit)
 }
+
+# convert character string to numeric vector (numbers separated by single space)
+tonum <- function(x) as.numeric(unlist(strsplit(x, " ")))
