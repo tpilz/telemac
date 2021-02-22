@@ -1,5 +1,6 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/tpilz/telemac/workflows/R-CMD-check/badge.svg)](https://github.com/tpilz/telemac/actions)
+[![CRAN status](https://www.r-pkg.org/badges/version/telemac)](https://CRAN.R-project.org/package=telemac)
 <!-- badges: end -->
 
 # telemac
@@ -10,7 +11,13 @@ The `telemac` package provides an interface to the integrated suite of solvers f
 
 ## Installation
 
-It is planned to submit the package to the CRAN repository. So far it is only available via github and the source code needs to be compiled by yourself. The most convenient way is to compile and install it in R via the `tidyverse` package:
+The package is available on [CRAN](https://cran.r-project.org/package=telemac) and can be installed via
+
+```r
+install.packages("telemac")
+```
+
+To install the latest development version the most convenient way is to compile and install it in R via the `tidyverse` package:
 
 ```r
 # install.packages("devtools")
