@@ -38,12 +38,12 @@ read_slf_header <- function(fname) {
   precision <- stringr::str_trim(readChar(con, 8))
   waste <- readBin(con, integer(), 1, size = 4, endian = "big")
 
-  fsize <- dplyr::case_when(
-    stringr::str_to_upper(precision) %in% c("SERAFIN", "SELAFIN") ~ 4L,
-    stringr::str_to_upper(precision) %in% c("SERAFIND", "SELAFIND") ~ 8L,
-    stringr::str_to_upper(precision) == "" ~ 4L,
-    TRUE ~ NA_integer_
-  )
+  precision_caps <- toupper(precision)
+  fsize <- {if (precision_caps %in% c("SERAFIN", "SELAFIN")) 4L
+            else if (precision_caps %in% c("SERAFIND", "SELAFIND")) 8L
+            else if (precision_caps == "") 4L
+            else NA_integer_
+  }
   if (is.na(fsize)) stop(paste0("Could not infer precision, unknown specification: '", precision, "'."))
 
   waste <- readBin(con, integer(), 1, size = 4, endian = "big")
@@ -68,7 +68,8 @@ read_slf_header <- function(fname) {
   # start datetime
   if (iparam[10] == 1) {
     waste <- readBin(con, integer(), 1, size = 4, endian = "big")
-    date <- lubridate::ymd_hms(paste(readBin(con, integer(), 6, size = 4, endian = "big"), collapse = "-"), tz = "UTC")
+    date <- as.POSIXct(paste(readBin(con, integer(), 6, size = 4, endian = "big"), collapse = "-"),
+                       tz = "UTC", format = "%Y-%M-%d-%H-%M-%S")
     waste <- readBin(con, integer(), 1, size = 4, endian = "big")
   }
 

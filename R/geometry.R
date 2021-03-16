@@ -305,8 +305,8 @@ write_geo.t2d_geo <- function(x) {
     nvar <- 1L
     vals <- array(x$elevation, dim = c(x$header$npoin, 1, 1))
   } else {
-    varn <- c("BOTTOM", stringr::str_to_upper(names(x$privars)))
-    varu <- c("M", stringr::str_to_upper(sapply(x$privars, "[[", "unit")))
+    varn <- c("BOTTOM", toupper(names(x$privars)))
+    varu <- c("M", toupper(sapply(x$privars, "[[", "unit")))
     nvar <- length(varn)
     vals <- array(c(x$elevation, sapply(x$privars, "[[", "values")), dim = c(x$header$npoin, nvar, 1))
   }

@@ -265,13 +265,13 @@ write_results.t2d_res <- function(x) {
   check_file(fname, "slf")
 
   # full header
-  vars <- stringr::str_to_upper(unique(x$values$variable))
-  iv <- sapply(vars, function(v) which(stringr::str_to_upper(x$header$varnames) == v), USE.NAMES = F)
+  vars <- toupper(unique(x$values$variable))
+  iv <- sapply(vars, function(v) which(toupper(x$header$varnames) == v), USE.NAMES = F)
   x_head <- list(title = x$header$title,
                   precision = 4L,
                   nbv1 = length(vars),
                   varnames = vars,
-                  varunits = stringr::str_to_upper(x$header$varunits[iv]),
+                  varunits = toupper(x$header$varunits[iv]),
                   date = x$header$date,
                   ntimes = x$header$ntimes,
                   nelem = x$header$nelem,
