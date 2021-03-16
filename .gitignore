@@ -5,3 +5,5 @@
 doc
 Meta
 inst/doc
+/src/*.o
+/src/*.so
