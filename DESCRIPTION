@@ -5,7 +5,7 @@ Description: An R interface to the TELEMAC suite for modelling
     of free surface flow. This includes methods for model initialisation, simulation,
     and visualisation. So far only the TELEMAC-2D module for 2-dimensional hydrodynamic
     modelling is implemented. 
-Version: 0.1.0.9000
+Version: 0.1.0.9001
 Authors@R: c(person(given="Tobias",
                     family="Pilz",
                     email="topilz@pik-potsdam.de",
