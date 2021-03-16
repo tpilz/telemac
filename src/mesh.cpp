@@ -1,4 +1,4 @@
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 using namespace Rcpp;
 
 
@@ -220,37 +220,35 @@ IntegerVector find_ipobo(IntegerMatrix ikle, NumericVector x, NumericVector y) {
 
 // ikle: Mesh connectivity matrix, e.g. output of find_ikle().
 // Get triangle edges from ikle matrix; one edge per line, columns are xy coordinates.
-// There will be duplicated lines that can subsequently be removed via unique(t(apply(edgm, 1, sort)))
-// which is faster than programming it in c++.
+// There will be duplicated lines that can subsequently be removed via unique(edgm)
+// which is (slightly) faster than programming it in c++ (with the solutions I found).
+// [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
-IntegerMatrix get_edges(IntegerMatrix ikle) {
-  int n = ikle.nrow();
-  // first create a vector of edges that is later transformed into a matrix (this is faster)
-  IntegerVector edg(n*6);
+arma::Mat<int> get_edges(arma::Mat<int> ikle) {
+  unsigned int n = ikle.n_rows, p = ikle.n_cols, np = n*p;
+  // matrix pointing to ikle
+  arma::Row<int> rowi(n);
   // output matrix
-  IntegerMatrix edgm_t(2, n*3);
-  IntegerMatrix edgm(n*3, 2);
-  int k, h;
+  arma::Mat<int> edgma(np, 2);
+  arma::uvec edg(2);
+  unsigned int k, h;
 
   // loop over triangles
   h = 0;
-  for (int i = 0; i < n; ++i) {
-    // 3 edges per triangle
-    for (int j = 0; j < 3; ++j) {
-      k = (j+1) % 3;
-      edg[h] = ikle(i, j);
-      edg[h+1] = ikle(i, k);
-      h += 2;
+  for (unsigned int i = 0; i < n; ++i) {
+    rowi = ikle.row(i);
+    // p edges (3 per triangle); sorted
+    for (unsigned int j = 0; j < p; ++j) {
+      k = (j+1) % p;
+      edg = {j, k};
+      edgma.row(h) = sort(rowi.elem(edg).t());
+      h += 1;
     }
   }
 
-  //convert output vector to matrix
-  edg.attr("dim") = Dimension(2, n*3);
-  edgm_t = wrap(edg);
-  edgm = transpose(edgm_t);
-
-  return edgm;
+  return edgma;
 }
+
 
 // Based on code of package interp (C++ function interpDeltri)
 // x: vector for X coordinates of mesh points (values in ikle point to positions in x and y)

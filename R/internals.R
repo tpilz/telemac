@@ -18,10 +18,6 @@ arrange_meshdata <- function(x, y, vars, values) {
     dplyr::arrange(.data$timestep, .data$variable) # correct order of timestep and variable
 }
 
-# get all unique edges of triangles from an ikle (no. of triangles x 3) matrix.
-# Output is a (no. of edges x 2) matrix (columns are edge nodes)
-get_tri_edg <- function(ikle) unique(t(apply(get_edges(ikle), 1, sort)))
-
 
 # SpatialLines to data.frame with columns x, y, and line (derived from cump)
 sl2df <- function(x) {

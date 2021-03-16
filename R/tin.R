@@ -127,7 +127,7 @@ tin.character <- function(x, ...) {
 
   pts <- cbind(dat$x, dat$y)
   tri <- dat$ikle
-  edg <- get_tri_edg(tri)
+  edg <- unique(get_edges(tri))
   bnd <- dat$ipobo[dat$ipobo > 0]
   brk <- NULL
   validate_tin(new_tin(pts, tri, edg, bnd, brk))
@@ -141,7 +141,7 @@ tin.character <- function(x, ...) {
 #' @name tin
 #' @export
 tin.matrix <- function(x, ..., ikle, ipobo) {
-  edg <- get_tri_edg(ikle)
+  edg <- unique(get_edges(ikle))
   bnd <- ipobo[ipobo > 0]
   validate_tin(new_tin(x, ikle, edg, bnd, NULL))
 }

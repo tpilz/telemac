@@ -47,5 +47,5 @@ Suggests:
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 LinkingTo: 
-    Rcpp
+    Rcpp, RcppArmadillo
 Config/testthat/edition: 3

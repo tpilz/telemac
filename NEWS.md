@@ -4,6 +4,8 @@
 - added `read_msh()`
 - `tin()` supports Gmsh mesh output (only format version 2) to infer TIN
 - added package documentation `?telemac`
+- improved performance
+  - `tin()` (determination of ikle matrix)
 ## Fixes
 - `tin()`
   - check of curve orientation of outer boundary

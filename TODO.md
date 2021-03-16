@@ -1,5 +1,8 @@
 # Package development
 - add more unit tests
+- improve performance
+    - use RcppArmadillo for matrix and vector operations in c++ code
+    - read/writing of possibly large files (should only be effective for geo and results files)
 
 # Functionalities
 - get flow through defined section
