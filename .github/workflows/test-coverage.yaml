@@ -35,6 +35,10 @@ jobs:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+          
+      - name: Install Mac dependencies
+        run: |
+          brew install udunits
 
       - name: Install dependencies
         run: |
