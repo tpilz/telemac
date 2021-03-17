@@ -57,7 +57,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install Mac dependencies
-        if: matrix.os == 'macOS-latest'
+        if: runner.os == 'macOS'
         run: |
           brew install udunits
 
