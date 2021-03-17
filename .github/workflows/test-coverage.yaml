@@ -38,7 +38,7 @@ jobs:
           
       - name: Install Mac dependencies
         run: |
-          brewer install udunits
+          brew install udunits
 
       - name: Install dependencies
         run: |
