@@ -9,5 +9,7 @@
 ## Fixes
 - `tin()`
   - check of curve orientation of outer boundary
+- `cas_lineadapt()`
+  - break of line within keyword or filename caused TELEMAC error
 
 # version 0.1.0, Feb 2021, first release 

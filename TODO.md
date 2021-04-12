@@ -21,6 +21,7 @@
 - support holes (inner boundaries) in TIN generation (so far only outer boundary and breaklines)
 - Gmsh support: add function to prepare Gmsh input (geometry file as in pputils gis2gmsh.py)
 - line_spacing(): works for segments, should also work for closed boundaries (distance between first and last point should match)
+- cas_lineadapt(): needs more sophisticated workaround to work in all situations (see comments)
 
 # CRAN submission (general)
 - In case of incompatible licence of a package in `Imports`: move package to `Suggests` (in case the package is not fundamentally required, in such a case an own implementation would be required)

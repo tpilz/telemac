@@ -42,17 +42,22 @@ DataFrame cas_lineadapt(DataFrame df, int sep_len) {
       do {
         p = len_excess_i[i] + h + 1;
         st = value[p-1]; // value string to be split
-        // if there is a slash only one line possible
-        grp = grepl("/", st);
-        if (grp[0]) {
-          si = ""; // first part empty
-          sp = st; // second part: whole string in new line
-          if (sp.length() > 72)
-            stop("Steering parameter values containing a slash '/' character must not be longer than 72 characters!");
-        } else {
-          si = st.substr(0, 72 - len_key_max); // first part of value string
-          sp = st.substr(72 - len_key_max, st.length() - si.length()); // second part
-        }
+        // // if there is a slash only one line possible
+        // grp = grepl("/", st);
+        // if (grp[0]) {
+        //   si = ""; // first part empty
+        //   sp = st; // second part: whole string in new line
+        //   if (sp.length() > 72)
+        //     stop("Steering parameter values containing a slash '/' character must not be longer than 72 characters!");
+        // } else {
+        //   si = st.substr(0, 72 - len_key_max); // first part of value string
+        //   sp = st.substr(72 - len_key_max, st.length() - si.length()); // second part
+        // }
+        // linbreaks seem to be only allowed within '' and between array elements (in keywords a space is inserted).
+        // Maybe the following is just enough in practice?!
+        // Ensuring the above requirements would require a more complex workaround...
+        si = "";
+        sp = st;
         // update key and value
         key.insert(key.begin() + p, "");
         value[p-1] = si;
