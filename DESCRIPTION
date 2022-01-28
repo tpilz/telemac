@@ -44,7 +44,7 @@ Suggests:
     tidyverse,
     testthat (>= 3.0.0),
     covr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 LinkingTo: 
     Rcpp, RcppArmadillo
