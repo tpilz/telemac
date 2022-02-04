@@ -8,6 +8,7 @@
 \alias{cli.data.frame}
 \alias{cli.t2d_cli}
 \alias{print.t2d_cli}
+\alias{[.t2d_cli}
 \title{Boundary (*.cli) object}
 \usage{
 cli(x, fname, ...)
@@ -23,6 +24,8 @@ cli(x, fname, ...)
 \method{cli}{t2d_cli}(x, fname = NULL, df = NULL, ...)
 
 \method{print}{t2d_cli}(x, ..., n = 10)
+
+\method{[}{t2d_cli}(x, ...)
 }
 \arguments{
 \item{x}{Either: A \code{character} string providing the name of an existing boundary file;

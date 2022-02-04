@@ -146,6 +146,14 @@ print.t2d_cli <- function(x, ..., n = 10) {
   invisible(x)
 }
 
+#' @name cli
+#' @export
+`[.t2d_cli` <- function(x, ...) {
+  out <- NextMethod()
+  attr(out, "file") <- attr(x, "file")
+  class(out) <- class(x)
+  out
+}
 
 #' Read boundary (*.cli) file
 #'
