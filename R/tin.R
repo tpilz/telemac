@@ -102,7 +102,7 @@ validate_tin <- function(x) {
 #'
 #' Make sure breaklines do not intersect as this is not supported by the Triangle
 #' algorithm. A possible workaround to split intersecting breaklines in R using
-#' \href{https://r-spatial.github.io/sf}{sf} is shown in the examples.
+#' \href{https://r-spatial.github.io/sf/}{sf} is shown in the examples.
 #'
 #' If you want to construct a \code{t2d_tin} object and get the error
 #' \code{Boundary points do not comply with requirements: [...]}

@@ -1,4 +1,4 @@
-# development version
+# version 0.1.1, Feb 2022
 ## Enhancements
 - added unit tests (so far only for `tin()`) and codecov integration
 - added `read_msh()`
@@ -6,6 +6,8 @@
 - added package documentation `?telemac`
 - improved performance
   - `tin()` (determination of ikle matrix)
+- compliance with dplyr 1.0.8
+
 ## Fixes
 - `tin()`
   - check of curve orientation of outer boundary
