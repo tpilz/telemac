@@ -6,6 +6,7 @@ There are no reverse dependencies.
 ## Test environments
 * local linux openSUSE LEAP 15.3, R 4.1.2
 * Github actions by r-lib, Standard CI workflow
+* win-builder (`devtools::check_win_devel()`)
 
 ## R CMD check results
 
